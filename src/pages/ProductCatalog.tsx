@@ -78,8 +78,10 @@ export default function ProductCatalog() {
         description:
           "Premium quality wireless headphones with noise cancellation and 30-hour battery life.",
         price: 129.99,
+        quantity: 15,
         stock_quantity: 15,
         category_id: 1,
+        image: "",
         image_url: "",
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -90,8 +92,10 @@ export default function ProductCatalog() {
         description:
           "Track your health and fitness with this advanced smartwatch featuring GPS and heart rate monitoring.",
         price: 249.99,
+        quantity: 8,
         stock_quantity: 8,
         category_id: 2,
+        image: "",
         image_url: "",
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
