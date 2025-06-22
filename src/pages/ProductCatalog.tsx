@@ -106,8 +106,10 @@ export default function ProductCatalog() {
         description:
           "Compact 10,000mAh power bank with fast charging capabilities for all your devices.",
         price: 39.99,
+        quantity: 2,
         stock_quantity: 2,
         category_id: 1,
+        image: "",
         image_url: "",
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
