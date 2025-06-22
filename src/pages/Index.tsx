@@ -138,7 +138,7 @@ export default function Index() {
               </Link>
             )}
 
-            <Link to={dashboardRedirects[user.role]}>
+            <Link to={dashboardRedirects[userRole]}>
               <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardContent className="p-6 text-center">
                   <BarChart3 className="h-8 w-8 mx-auto mb-4 text-metallic-primary" />
