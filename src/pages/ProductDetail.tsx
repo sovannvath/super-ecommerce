@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
-import { ArrowLeft, ShoppingCart, Heart, Plus } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Heart, Plus, Package } from "lucide-react";
 import { getMockProduct } from "@/data/mockData";
 
 export default function ProductDetail() {
