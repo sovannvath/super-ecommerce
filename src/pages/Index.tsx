@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 
 export default function Index() {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, getUserRole } = useAuth();
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
