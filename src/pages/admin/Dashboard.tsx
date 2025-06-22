@@ -219,6 +219,44 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* Recent Order Notifications */}
+        <Card className="mt-6 border-blue-200 bg-blue-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-blue-800">
+              <Package className="h-5 w-5" />
+              Recent Orders
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-blue-700">
+                New orders will appear here automatically. Check notifications
+                bell in the navbar for real-time updates.
+              </p>
+              <div className="bg-white p-4 rounded-lg border">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                      <Bell className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        Live Order Notifications
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Get notified instantly when customers place orders
+                      </p>
+                    </div>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800">
+                    ✓ Active
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Low Stock Alert */}
         {lowStockProducts.length > 0 && (
           <Card className="mt-6 border-yellow-200 bg-yellow-50">

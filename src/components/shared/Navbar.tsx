@@ -235,6 +235,10 @@ export const Navbar: React.FC = () => {
                 className="relative"
               >
                 <Bell className="h-5 w-5" />
+                {/* Notification badge - you can add unread count here */}
+                <Badge className="absolute -top-1 -right-1 bg-red-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="animate-pulse">•</span>
+                </Badge>
                 <span className="sr-only">Notifications</span>
               </Button>
             )}
