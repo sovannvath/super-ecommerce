@@ -140,7 +140,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
                   <div className="text-right ml-4">
                     <p className="text-2xl font-bold text-metallic-primary">
-                      ${product.price.toFixed(2)}
+                      {formatCurrency(product.price)}
                     </p>
                   </div>
                 </div>
