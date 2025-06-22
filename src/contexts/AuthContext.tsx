@@ -91,7 +91,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   ) => {
     try {
       setIsLoading(true);
-      const response = await api.register({ name, email, password, role });
+      const response = await api.register({
+        name,
+        email,
+        password,
+        password_confirmation: password,
+        role,
+      });
       api.setToken(response.token);
       setUser(response.user);
       toast({
