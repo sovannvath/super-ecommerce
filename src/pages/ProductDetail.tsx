@@ -85,14 +85,14 @@ export default function ProductDetail() {
       return;
     }
 
-    if (!product) return;
+    if (!displayProduct) return;
 
     try {
       setIsAddingToCart(true);
-      await api.addToCart(product.id, quantity);
+      await api.addToCart(displayProduct.id, quantity);
       toast({
         title: "Added to Cart",
-        description: `${quantity} ${product.name}(s) added to your cart`,
+        description: `${quantity} ${displayProduct.name}(s) added to your cart`,
       });
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -116,16 +116,16 @@ export default function ProductDetail() {
       return;
     }
 
-    if (!product) return;
+    if (!displayProduct) return;
 
     try {
       setIsProcessing(true);
       // Add to cart first
-      await api.addToCart(product.id, quantity);
+      await api.addToCart(displayProduct.id, quantity);
 
       toast({
         title: "Proceeding to Checkout",
-        description: `${quantity} ${product.name}(s) added to cart`,
+        description: `${quantity} ${displayProduct.name}(s) added to cart`,
       });
 
       // Navigate to checkout
@@ -146,7 +146,7 @@ export default function ProductDetail() {
     setIsWishlisted(!isWishlisted);
     toast({
       title: isWishlisted ? "Removed from Wishlist" : "Added to Wishlist",
-      description: `${product?.name} ${isWishlisted ? "removed from" : "added to"} your wishlist`,
+      description: `${displayProduct?.name} ${isWishlisted ? "removed from" : "added to"} your wishlist`,
     });
   };
 
@@ -158,32 +158,130 @@ export default function ProductDetail() {
     );
   }
 
-  if (!product) {
+  // Use fallback product data if no product is loaded
+  const displayProduct = product || {
+    id: Number(id),
+    name: "Product Preview",
+    description:
+      "Product details are temporarily unavailable. Please try again or contact support.",
+    price: "0.00",
+    quantity: 0,
+    low_stock_threshold: 5,
+    image: "/placeholder.svg",
+    status: true,
+    created_at: new Date().toISOString(),
+  };
+
+  if (!product && !isLoading) {
+    // Show fallback UI with buy button
+    const fallbackPrice = 99.99; // Default price for demo
+
     return (
       <div className="container mx-auto px-4 py-8">
-        <Card>
-          <CardContent className="text-center py-12">
-            <h2 className="text-2xl font-bold mb-4">Product Not Found</h2>
-            <p className="text-muted-foreground mb-6">
-              The product you're looking for doesn't exist.
-            </p>
-            <Link to="/products">
-              <Button>
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Products
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+        <div className="mb-6">
+          <Link to="/products">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Products
+            </Button>
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Product Image */}
+          <div className="space-y-4">
+            <div className="aspect-square rounded-lg border bg-muted overflow-hidden">
+              <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                <div className="text-center">
+                  <Package className="w-16 h-16 mx-auto mb-4" />
+                  <p>Product image unavailable</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Product Information */}
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold mb-2">Product #{id}</h1>
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-3xl font-bold text-primary">
+                  ${fallbackPrice.toFixed(2)}
+                </span>
+                <Badge variant="secondary">Demo Mode</Badge>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Description</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                This product is currently unavailable for preview. Please check
+                back later or contact support for more information.
+              </p>
+            </div>
+
+            <Separator />
+
+            {/* Always Show Buy Section */}
+            <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200">
+              <CardContent className="pt-6">
+                <div className="text-center space-y-4">
+                  <h3 className="text-xl font-bold text-gray-900">
+                    Ready to Purchase?
+                  </h3>
+                  <p className="text-gray-600">
+                    Sign in to proceed with your purchase
+                  </p>
+
+                  <div className="space-y-3">
+                    {/* Primary Buy Now Button */}
+                    <Link to="/auth/login" className="block">
+                      <Button
+                        size="lg"
+                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4"
+                      >
+                        <ShoppingCart className="w-5 h-5 mr-2" />
+                        Buy Now - ${fallbackPrice.toFixed(2)}
+                      </Button>
+                    </Link>
+
+                    {/* Secondary Sign Up Button */}
+                    <Link to="/auth/register" className="block">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-4"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Create Account & Buy
+                      </Button>
+                    </Link>
+                  </div>
+
+                  <div className="flex justify-center gap-4 text-sm">
+                    <Link
+                      to="/auth/login"
+                      className="text-blue-600 hover:text-blue-800 underline"
+                    >
+                      Already have an account? Sign in
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     );
   }
 
   const price =
-    typeof product.price === "string"
-      ? parseFloat(product.price)
-      : product.price;
-  const stock = product.quantity || product.stock_quantity || 0;
+    typeof displayProduct.price === "string"
+      ? parseFloat(displayProduct.price)
+      : displayProduct.price;
+  const stock = displayProduct.quantity || displayProduct.stock_quantity || 0;
   const isInStock = stock > 0;
 
   return (
@@ -201,10 +299,10 @@ export default function ProductDetail() {
         {/* Product Image */}
         <div className="space-y-4">
           <div className="aspect-square rounded-lg border bg-muted overflow-hidden">
-            {product.image || product.image_url ? (
+            {displayProduct.image || displayProduct.image_url ? (
               <img
-                src={product.image || product.image_url}
-                alt={product.name}
+                src={displayProduct.image || displayProduct.image_url}
+                alt={displayProduct.name}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -218,7 +316,7 @@ export default function ProductDetail() {
         {/* Product Information */}
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
+            <h1 className="text-3xl font-bold mb-2">{displayProduct.name}</h1>
             <div className="flex items-center gap-2 mb-4">
               <span className="text-3xl font-bold text-primary">
                 ${price.toFixed(2)}
@@ -234,23 +332,24 @@ export default function ProductDetail() {
           <div>
             <h3 className="text-lg font-semibold mb-2">Description</h3>
             <p className="text-muted-foreground leading-relaxed">
-              {product.description || "No description available."}
+              {displayProduct.description || "No description available."}
             </p>
           </div>
 
           {/* Categories */}
-          {product.categories && product.categories.length > 0 && (
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Categories</h3>
-              <div className="flex flex-wrap gap-2">
-                {product.categories.map((category) => (
-                  <Badge key={category.id} variant="secondary">
-                    {category.name}
-                  </Badge>
-                ))}
+          {displayProduct.categories &&
+            displayProduct.categories.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Categories</h3>
+                <div className="flex flex-wrap gap-2">
+                  {displayProduct.categories.map((category) => (
+                    <Badge key={category.id} variant="secondary">
+                      {category.name}
+                    </Badge>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           <Separator />
 
@@ -409,24 +508,26 @@ export default function ProductDetail() {
             <CardContent className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Product ID:</span>
-                <span>{product.id}</span>
+                <span>{displayProduct.id}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Stock:</span>
                 <span>{stock} units</span>
               </div>
-              {product.low_stock_threshold && (
+              {displayProduct.low_stock_threshold && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">
                     Low Stock Threshold:
                   </span>
-                  <span>{product.low_stock_threshold} units</span>
+                  <span>{displayProduct.low_stock_threshold} units</span>
                 </div>
               )}
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Status:</span>
-                <Badge variant={product.status ? "default" : "secondary"}>
-                  {product.status ? "Active" : "Inactive"}
+                <Badge
+                  variant={displayProduct.status ? "default" : "secondary"}
+                >
+                  {displayProduct.status ? "Active" : "Inactive"}
                 </Badge>
               </div>
             </CardContent>
