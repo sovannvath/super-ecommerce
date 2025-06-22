@@ -1,4 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { api } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  BarChart3,
+  Package,
+  ShoppingCart,
+  Users,
+  Warehouse,
+  Menu,
+  LogOut,
+  User,
+  Bell,
+} from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -51,7 +76,12 @@ export const Navbar: React.FC = () => {
         return [
           ...baseItems,
           { href: "/customer/dashboard", icon: BarChart3, label: "Dashboard" },
-          { href: "/customer/cart", icon: ShoppingCart, label: "Cart" },
+          {
+            href: "/customer/cart",
+            icon: ShoppingCart,
+            label: "Cart",
+            badge: cartItemCount > 0 ? cartItemCount : null
+          },
           { href: "/customer/orders", icon: Package, label: "My Orders" },
         ];
       case "admin":
@@ -165,15 +195,18 @@ export const Navbar: React.FC = () => {
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
-                <Link key={item.href} to={item.href}>
-                  <Button
-                    variant={isActive(item.href) ? "default" : "ghost"}
-                    className={
-                      isActive(item.href)
-                        ? "bg-metallic-primary hover:bg-metallic-primary/90"
-                        : "text-metallic-accent hover:text-metallic-primary"
-                    }
-                  >
+              <Link
+                key={item.label}
+                to={item.href}
+                className={`text-foreground/60 transition-colors hover:text-foreground/80 flex items-center gap-1 ${
+                  location.pathname === item.href ? "text-foreground" : ""
+                }`}
+              >
+                {item.label}
+                {item.badge && (
+                  <Badge className="bg-red-500 text-white text-xs">{item.badge}</Badge>
+                )}
+              </Link>
                     <Icon className="h-4 w-4 mr-2" />
                     {item.label}
                   </Button>
@@ -233,18 +266,21 @@ export const Navbar: React.FC = () => {
                   {navItems.map((item) => {
                     const Icon = item.icon;
                     return (
-                      <Link key={item.href} to={item.href}>
-                        <Button
-                          variant={isActive(item.href) ? "default" : "ghost"}
-                          className={`w-full justify-start ${
-                            isActive(item.href)
-                              ? "bg-metallic-primary hover:bg-metallic-primary/90"
-                              : "text-metallic-accent hover:text-metallic-primary"
-                          }`}
-                        >
-                          <Icon className="h-4 w-4 mr-2" />
-                          {item.label}
-                        </Button>
+                  <Link
+                    to={item.href}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${
+                      location.pathname === item.href
+                        ? "bg-muted text-primary"
+                        : ""
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {item.label}
+                    {item.badge && (
+                      <Badge className="ml-auto bg-red-500 text-white">{item.badge}</Badge>
+                    )}
+                  </Link>
                       </Link>
                     );
                   })}
