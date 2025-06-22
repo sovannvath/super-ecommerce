@@ -198,11 +198,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <CardContent className="p-0">
           {/* Product Image */}
           <div className="relative aspect-square bg-metallic-bg rounded-t-lg overflow-hidden">
-            {product.image_url ? (
+            {product.image ? (
               <img
-                src={product.image_url}
+                src={product.image}
                 alt={product.name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                onError={(e) => {
+                  e.currentTarget.src = "/placeholder.svg";
+                }}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
