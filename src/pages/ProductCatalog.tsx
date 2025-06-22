@@ -43,6 +43,7 @@ export default function ProductCatalog() {
   const [sortBy, setSortBy] = useState("name");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchParams, setSearchParams] = useSearchParams();
+  const [isOffline, setIsOffline] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -72,6 +73,7 @@ export default function ProductCatalog() {
       const response = await api.getProducts();
       setProducts(response.data || []);
       console.log(`Successfully loaded ${response.data?.length || 0} products`);
+      setIsOffline(false);
     } catch (error) {
       console.error("API Error:", error);
 
@@ -124,6 +126,7 @@ export default function ProductCatalog() {
       ];
 
       setProducts(mockProducts);
+      setIsOffline(true);
 
       toast({
         title: "Using Demo Data",
@@ -235,12 +238,35 @@ export default function ProductCatalog() {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-metallic-primary mb-2">
-            Product Catalog
-          </h1>
-          <p className="text-metallic-accent">
-            Discover our wide range of products
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-metallic-primary mb-2">
+                Product Catalog
+              </h1>
+              <p className="text-metallic-accent">
+                Discover our wide range of products
+              </p>
+            </div>
+
+            {isOffline && (
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 px-3 py-2 bg-yellow-100 text-yellow-800 rounded-lg">
+                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                  <span className="text-sm font-medium">Demo Mode</span>
+                </div>
+                <Button
+                  onClick={() => {
+                    setIsLoading(true);
+                    loadProducts(0);
+                  }}
+                  variant="outline"
+                  className="border-metallic-primary text-metallic-primary"
+                >
+                  Retry Connection
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Search and Filters */}
