@@ -204,6 +204,16 @@ const App = () => (
               }
             />
             <Route
+              path="/admin/orders"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <LayoutWrapper>
+                    <OrderProcessing />
+                  </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/admin/request-orders"
               element={
                 <ProtectedRoute allowedRoles={["admin"]}>
