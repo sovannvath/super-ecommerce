@@ -214,7 +214,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             )}
 
             {/* Stock indicator */}
-            {product.stock_quantity === 0 && (
+            {product.quantity === 0 && (
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                 <div className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
                   Out of Stock
