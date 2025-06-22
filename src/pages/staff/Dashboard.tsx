@@ -84,6 +84,11 @@ export default function StaffDashboard() {
   };
 
   const filterOrders = () => {
+    if (!orders || !Array.isArray(orders)) {
+      setFilteredOrders([]);
+      return;
+    }
+
     let filtered = [...orders];
 
     // Search filter
