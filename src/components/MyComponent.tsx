@@ -119,9 +119,9 @@ export default function MyComponent() {
 
           <div className="pt-4 border-t">
             <Button variant="outline" className="w-full" asChild>
-              <a href="/api-demo" className="flex items-center gap-2">
+              <a href="/products" className="flex items-center gap-2">
                 <ExternalLink className="h-4 w-4" />
-                View Full API Demo
+                View All Products
               </a>
             </Button>
           </div>
