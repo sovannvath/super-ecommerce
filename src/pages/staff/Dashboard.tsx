@@ -118,13 +118,13 @@ export default function StaffDashboard() {
       setIsProcessing(true);
 
       if (actionType === "approve") {
-        await api.updateOrderStatus(selectedOrder.id, { status: "approved" });
+        await api.updateOrderStatus(selectedOrder.id, "approved");
         toast({
           title: "Order Approved",
           description: `Order #${selectedOrder.id} has been approved`,
         });
       } else if (actionType === "deliver") {
-        await api.updateOrderStatus(selectedOrder.id, { status: "delivered" });
+        await api.updateOrderStatus(selectedOrder.id, "delivered");
         toast({
           title: "Order Delivered",
           description: `Order #${selectedOrder.id} has been marked as delivered`,
