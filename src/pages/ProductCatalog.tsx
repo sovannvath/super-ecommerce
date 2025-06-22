@@ -68,9 +68,9 @@ export default function ProductCatalog() {
   }, [products, searchQuery, priceRange, selectedCategory, sortBy]);
 
   const loadProducts = async () => {
-    console.log("Loading products...");
+    console.log("Loading demo products...");
 
-    // Immediately load demo data for reliable demo experience
+    // Load demo data immediately for reliable demo experience
     const mockProducts = [
       {
         id: 1,
@@ -144,31 +144,65 @@ export default function ProductCatalog() {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       },
+      {
+        id: 7,
+        name: "4K Webcam",
+        description:
+          "Professional 4K webcam with auto-focus and built-in microphone for video calls.",
+        price: 149.99,
+        stock_quantity: 7,
+        category_id: 3,
+        image_url: "",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: 8,
+        name: "Wireless Earbuds",
+        description:
+          "True wireless earbuds with active noise cancellation and premium sound quality.",
+        price: 99.99,
+        stock_quantity: 25,
+        category_id: 1,
+        image_url: "",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
     ];
 
     setProducts(mockProducts);
     setIsOffline(true);
     setIsLoading(false);
 
-    console.log(`Loaded ${mockProducts.length} demo products`);
+    console.log(`✅ Loaded ${mockProducts.length} demo products successfully`);
+  };
 
-    // Try to connect to real API in background (optional)
+  const tryConnectToAPI = async () => {
+    setIsLoading(true);
     try {
+      console.log("🔄 Attempting to connect to real API...");
       const response = await api.getProducts();
       if (response && response.data) {
         setProducts(response.data);
         setIsOffline(false);
         console.log(
-          `Successfully loaded ${response.data.length} real products`,
+          `✅ Successfully loaded ${response.data.length} real products`,
         );
         toast({
-          title: "Connected to API",
-          description: `Loaded ${response.data.length} products from server`,
+          title: "✅ Connected to API",
+          description: `Successfully loaded ${response.data.length} products from server`,
         });
       }
     } catch (error) {
-      // Keep demo data if API fails
-      console.log("API not available, using demo data");
+      console.log("❌ API connection failed");
+      toast({
+        title: "Connection Failed",
+        description:
+          "Unable to connect to the server. Demo mode will continue.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -288,16 +322,12 @@ export default function ProductCatalog() {
                   <span className="text-sm font-medium">Demo Mode</span>
                 </div>
                 <Button
-                  onClick={() => {
-                    setIsLoading(true);
-                    setIsOffline(false);
-                    loadProducts();
-                  }}
+                  onClick={tryConnectToAPI}
                   variant="outline"
                   className="border-metallic-primary text-metallic-primary"
                   disabled={isLoading}
                 >
-                  {isLoading ? "Connecting..." : "Retry Connection"}
+                  {isLoading ? "Connecting..." : "Connect to API"}
                 </Button>
               </div>
             )}
