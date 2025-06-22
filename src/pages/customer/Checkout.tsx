@@ -105,6 +105,19 @@ export default function Checkout() {
         billing_address: shippingAddress,
       });
 
+      // Create notification for admin about new order
+      try {
+        await api.createNotification({
+          title: "New Order Received",
+          message: `Order #${order.id} has been placed by customer. Total: $${calculateTotal().toFixed(2)}`,
+          type: "info",
+          role: "admin",
+        });
+      } catch (notificationError) {
+        // Don't fail the order if notification fails
+        console.warn("Failed to create admin notification:", notificationError);
+      }
+
       toast({
         title: "Order Placed Successfully!",
         description: `Your order #${order.id} has been placed and is being processed.`,
