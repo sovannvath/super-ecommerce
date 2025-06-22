@@ -102,12 +102,23 @@ export default function Index() {
               You're logged in as {userRole}. Access your dashboard to get
               started.
             </p>
-            <Link to={dashboardRedirects[userRole]}>
-              <Button className="bg-metallic-primary hover:bg-metallic-primary/90">
-                Go to Dashboard
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link to="/auth/register">
+                <Button size="lg" className="bg-metallic-primary hover:bg-metallic-primary/90">
+                  Get Started
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Button>
+              </Link>
+              <Link to="/products">
+                <Button variant="outline" size="lg" className="border-metallic-primary text-metallic-primary">
+                  Browse Products
+                  <ShoppingBag className="h-5 w-5 ml-2" />
+                </Button>
+              </Link>
+            </div>
+                </Link>
+              )}
+            </div>
           </div>
 
           {/* Quick Actions for authenticated users */}
