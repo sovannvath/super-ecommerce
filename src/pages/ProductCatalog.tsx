@@ -104,10 +104,22 @@ export default function ProductCatalog() {
       );
     }
 
-    // Category filter
+    // Category filter - simplified for now since Laravel API may not have categories
     if (selectedCategory && selectedCategory !== "all") {
-      filtered = filtered.filter(
-        (product) => product.category_id?.toString() === selectedCategory,
+      // For demonstration, we'll filter based on product name keywords
+      const categoryKeywords = {
+        Electronics: ["keyboard", "mouse", "webcam", "lamp"],
+        Accessories: ["charger", "desk", "stand"],
+        Audio: ["headphones", "earbuds", "speaker"],
+      };
+
+      const keywords = categoryKeywords[selectedCategory] || [];
+      filtered = filtered.filter((product) =>
+        keywords.some(
+          (keyword) =>
+            product.name.toLowerCase().includes(keyword) ||
+            product.description.toLowerCase().includes(keyword),
+        ),
       );
     }
 
