@@ -19,6 +19,14 @@ export default {
     },
     extend: {
       colors: {
+        // Metallic Chic Theme Colors
+        metallic: {
+          primary: "#3D52A0", // Deep blue
+          secondary: "#7091E6", // Medium blue
+          accent: "#8697C4", // Light blue
+          light: "#ADBBDA", // Very light blue
+          bg: "#EDE8F5", // Light lavender background
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

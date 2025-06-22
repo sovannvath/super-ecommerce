@@ -9,7 +9,7 @@
    * A different format will require also updating the theme in tailwind.config.ts.
   */
   :root {
-    --background: 0 0% 100%;
+    --background: 268 100% 97%; /* #EDE8F5 - Light lavender */
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -18,10 +18,10 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 227 45% 43%; /* #3D52A0 - Deep blue */
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96.1%;
+    --secondary: 226 70% 68%; /* #7091E6 - Medium blue */
     --secondary-foreground: 222.2 47.4% 11.2%;
 
     --muted: 210 40% 96.1%;
