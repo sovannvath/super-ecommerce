@@ -113,14 +113,22 @@ export default function ProductCatalog() {
 
     // Price range filter
     if (priceRange.min) {
-      filtered = filtered.filter(
-        (product) => product.price >= parseFloat(priceRange.min),
-      );
+      filtered = filtered.filter((product) => {
+        const price =
+          typeof product.price === "string"
+            ? parseFloat(product.price)
+            : product.price;
+        return price >= parseFloat(priceRange.min);
+      });
     }
     if (priceRange.max) {
-      filtered = filtered.filter(
-        (product) => product.price <= parseFloat(priceRange.max),
-      );
+      filtered = filtered.filter((product) => {
+        const price =
+          typeof product.price === "string"
+            ? parseFloat(product.price)
+            : product.price;
+        return price <= parseFloat(priceRange.max);
+      });
     }
 
     // Sort products
