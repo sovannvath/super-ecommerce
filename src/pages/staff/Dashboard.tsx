@@ -71,7 +71,7 @@ export default function StaffDashboard() {
       ]);
 
       setStats(dashboardResponse);
-      setOrders(ordersResponse.data);
+      setOrders(ordersResponse.data || []);
     } catch (error) {
       toast({
         title: "Error",
@@ -84,6 +84,11 @@ export default function StaffDashboard() {
   };
 
   const filterOrders = () => {
+    if (!orders || !Array.isArray(orders)) {
+      setFilteredOrders([]);
+      return;
+    }
+
     let filtered = [...orders];
 
     // Search filter
@@ -113,13 +118,13 @@ export default function StaffDashboard() {
       setIsProcessing(true);
 
       if (actionType === "approve") {
-        await api.updateOrderStatus(selectedOrder.id, { status: "approved" });
+        await api.updateOrderStatus(selectedOrder.id, "approved");
         toast({
           title: "Order Approved",
           description: `Order #${selectedOrder.id} has been approved`,
         });
       } else if (actionType === "deliver") {
-        await api.updateOrderStatus(selectedOrder.id, { status: "delivered" });
+        await api.updateOrderStatus(selectedOrder.id, "delivered");
         toast({
           title: "Order Delivered",
           description: `Order #${selectedOrder.id} has been marked as delivered`,
@@ -128,19 +133,21 @@ export default function StaffDashboard() {
 
       // Update local state
       setOrders((prev) =>
-        prev.map((order) =>
-          order.id === selectedOrder.id
-            ? {
-                ...order,
-                status:
-                  actionType === "approve"
-                    ? "approved"
-                    : actionType === "deliver"
-                      ? "delivered"
-                      : order.status,
-              }
-            : order,
-        ),
+        Array.isArray(prev)
+          ? prev.map((order) =>
+              order.id === selectedOrder.id
+                ? {
+                    ...order,
+                    status:
+                      actionType === "approve"
+                        ? "approved"
+                        : actionType === "deliver"
+                          ? "delivered"
+                          : order.status,
+                  }
+                : order,
+            )
+          : prev,
       );
     } catch (error) {
       toast({
@@ -191,11 +198,12 @@ export default function StaffDashboard() {
     );
   }
 
-  const pendingOrders = orders.filter((order) => order.status === "pending");
-  const approvedOrders = orders.filter((order) => order.status === "approved");
-  const deliveredOrders = orders.filter(
-    (order) => order.status === "delivered",
-  );
+  const pendingOrders =
+    orders?.filter((order) => order.status === "pending") || [];
+  const approvedOrders =
+    orders?.filter((order) => order.status === "approved") || [];
+  const deliveredOrders =
+    orders?.filter((order) => order.status === "delivered") || [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-metallic-bg via-metallic-light/20 to-metallic-accent/20">

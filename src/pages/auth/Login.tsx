@@ -16,7 +16,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, getUserRole } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,8 +31,18 @@ export default function Login() {
     try {
       setIsLoading(true);
       await login(email, password);
-      // Navigation will be handled by the auth context and routing
-      navigate("/", { replace: true });
+
+      // Role-based navigation after login
+      const userRole = getUserRole();
+      const dashboardRoutes = {
+        customer: "/",
+        admin: "/admin/dashboard",
+        warehouse: "/warehouse/dashboard",
+        staff: "/staff/dashboard",
+      };
+
+      const redirectTo = dashboardRoutes[userRole] || "/";
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {

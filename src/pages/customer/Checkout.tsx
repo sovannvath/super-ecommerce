@@ -36,10 +36,18 @@ export default function Checkout() {
         api.getPaymentMethods(),
       ]);
 
-      setCartItems(cartResponse.items || []);
-      setPaymentMethods(paymentMethodsResponse.methods || ["cash", "card"]);
+      // Handle different response formats
+      const cartItems = Array.isArray(cartResponse)
+        ? cartResponse
+        : cartResponse.items || cartResponse.data || [];
+      const paymentMethods = Array.isArray(paymentMethodsResponse)
+        ? paymentMethodsResponse
+        : paymentMethodsResponse.methods || ["cash", "card"];
 
-      if (cartResponse.items?.length === 0) {
+      setCartItems(cartItems);
+      setPaymentMethods(paymentMethods);
+
+      if (cartItems.length === 0) {
         toast({
           title: "Cart is Empty",
           description: "Please add items to your cart before checkout",
@@ -83,18 +91,40 @@ export default function Checkout() {
 
     try {
       setIsProcessing(true);
+
+      // Create order with cart items
+      const orderItems = cartItems.map((item) => ({
+        product_id: item.product_id,
+        quantity: item.quantity,
+      }));
+
       const order = await api.createOrder({
+        items: orderItems,
         payment_method: paymentMethod,
         shipping_address: shippingAddress,
+        billing_address: shippingAddress,
       });
+
+      // Create notification for admin about new order
+      try {
+        await api.createNotification({
+          title: "New Order Received",
+          message: `Order #${order.id} has been placed by customer. Total: $${calculateTotal().toFixed(2)}`,
+          type: "info",
+          role: "admin",
+        });
+      } catch (notificationError) {
+        // Don't fail the order if notification fails
+        console.warn("Failed to create admin notification:", notificationError);
+      }
 
       toast({
         title: "Order Placed Successfully!",
         description: `Your order #${order.id} has been placed and is being processed.`,
       });
 
-      // Clear cart and redirect to orders
-      navigate("/customer/orders");
+      // Redirect to success page with order ID
+      navigate(`/customer/checkout/success?order_id=${order.id}`);
     } catch (error) {
       console.error("Error creating order:", error);
       toast({

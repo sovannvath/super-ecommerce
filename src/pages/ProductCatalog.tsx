@@ -5,6 +5,8 @@ import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ProductCard } from "@/components/customer/ProductCard";
 import { Card, CardContent } from "@/components/ui/card";
+import { getMockProducts } from "@/data/mockData";
+import { OfflineBanner } from "@/components/shared/OfflineBanner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -68,157 +70,37 @@ export default function ProductCatalog() {
   }, [products, searchQuery, priceRange, selectedCategory, sortBy]);
 
   const loadProducts = async () => {
-    console.log("Loading demo products...");
-
-    // Load demo data immediately for reliable demo experience
-    const mockProducts = [
-      {
-        id: 1,
-        name: "Wireless Bluetooth Headphones",
-        description:
-          "Premium quality wireless headphones with noise cancellation and 30-hour battery life.",
-        price: 129.99,
-        quantity: 15,
-        stock_quantity: 15,
-        category_id: 1,
-        image: "",
-        image_url: "",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: 2,
-        name: "Smart Fitness Watch",
-        description:
-          "Track your health and fitness with this advanced smartwatch featuring GPS and heart rate monitoring.",
-        price: 249.99,
-        quantity: 8,
-        stock_quantity: 8,
-        category_id: 2,
-        image: "",
-        image_url: "",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: 3,
-        name: "Portable Phone Charger",
-        description:
-          "Compact 10,000mAh power bank with fast charging capabilities for all your devices.",
-        price: 39.99,
-        quantity: 2,
-        stock_quantity: 2,
-        category_id: 1,
-        image: "",
-        image_url: "",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: 4,
-        name: "LED Desk Lamp",
-        description:
-          "Adjustable LED desk lamp with multiple brightness levels and USB charging port.",
-        price: 59.99,
-        quantity: 12,
-        stock_quantity: 12,
-        category_id: 3,
-        image: "",
-        image_url: "",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: 5,
-        name: "Mechanical Gaming Keyboard",
-        description:
-          "RGB backlit mechanical keyboard with blue switches, perfect for gaming and typing.",
-        price: 89.99,
-        quantity: 6,
-        stock_quantity: 6,
-        category_id: 2,
-        image: "",
-        image_url: "",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: 6,
-        name: "Wireless Mouse",
-        description:
-          "Ergonomic wireless mouse with precision tracking and long battery life.",
-        price: 34.99,
-        quantity: 20,
-        stock_quantity: 20,
-        category_id: 2,
-        image: "",
-        image_url: "",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: 7,
-        name: "4K Webcam",
-        description:
-          "Professional 4K webcam with auto-focus and built-in microphone for video calls.",
-        price: 149.99,
-        quantity: 7,
-        stock_quantity: 7,
-        category_id: 3,
-        image: "",
-        image_url: "",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: 8,
-        name: "Wireless Earbuds",
-        description:
-          "True wireless earbuds with active noise cancellation and premium sound quality.",
-        price: 99.99,
-        quantity: 25,
-        stock_quantity: 25,
-        category_id: 1,
-        image: "",
-        image_url: "",
-        category_id: 1,
-        image_url: "",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-    ];
-
-    setProducts(mockProducts);
-    setIsOffline(true);
-    setIsLoading(false);
-
-    console.log(`✅ Loaded ${mockProducts.length} demo products successfully`);
-  };
-
-  const tryConnectToAPI = async () => {
-    setIsLoading(true);
     try {
-      console.log("🔄 Attempting to connect to real API...");
+      setIsLoading(true);
       const response = await api.getProducts();
-      if (response && response.data) {
-        setProducts(response.data);
-        setIsOffline(false);
-        console.log(
-          `✅ Successfully loaded ${response.data.length} real products`,
-        );
+      setProducts(response.data);
+      setIsOffline(false);
+      console.log(`✅ Loaded ${response.data.length} products from API`);
+    } catch (error) {
+      console.error("Failed to load products:", error);
+
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+
+      if (errorMessage.includes("Server is temporarily unavailable")) {
         toast({
-          title: "✅ Connected to API",
-          description: `Successfully loaded ${response.data.length} products from server`,
+          title: "Server Unavailable",
+          description:
+            "Product catalog is temporarily unavailable. Some features may be limited.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Using Offline Mode",
+          description: "Showing sample products. Some features may be limited.",
+          variant: "default",
         });
       }
-    } catch (error) {
-      console.log("❌ API connection failed");
-      toast({
-        title: "Connection Failed",
-        description:
-          "Unable to connect to the server. Demo mode will continue.",
-        variant: "destructive",
-      });
+
+      // Use mock data as fallback
+      const mockProducts = getMockProducts();
+      setProducts(mockProducts);
+      setIsOffline(true);
     } finally {
       setIsLoading(false);
     }
@@ -240,36 +122,64 @@ export default function ProductCatalog() {
       );
     }
 
-    // Category filter
+    // Category filter - simplified for now since Laravel API may not have categories
     if (selectedCategory && selectedCategory !== "all") {
-      filtered = filtered.filter(
-        (product) => product.category_id?.toString() === selectedCategory,
+      // For demonstration, we'll filter based on product name keywords
+      const categoryKeywords = {
+        Electronics: ["keyboard", "mouse", "webcam", "lamp"],
+        Accessories: ["charger", "desk", "stand"],
+        Audio: ["headphones", "earbuds", "speaker"],
+      };
+
+      const keywords = categoryKeywords[selectedCategory] || [];
+      filtered = filtered.filter((product) =>
+        keywords.some(
+          (keyword) =>
+            product.name.toLowerCase().includes(keyword) ||
+            product.description.toLowerCase().includes(keyword),
+        ),
       );
     }
 
     // Price range filter
     if (priceRange.min) {
-      filtered = filtered.filter(
-        (product) => product.price >= parseFloat(priceRange.min),
-      );
+      filtered = filtered.filter((product) => {
+        const price =
+          typeof product.price === "string"
+            ? parseFloat(product.price)
+            : product.price;
+        return price >= parseFloat(priceRange.min);
+      });
     }
     if (priceRange.max) {
-      filtered = filtered.filter(
-        (product) => product.price <= parseFloat(priceRange.max),
-      );
+      filtered = filtered.filter((product) => {
+        const price =
+          typeof product.price === "string"
+            ? parseFloat(product.price)
+            : product.price;
+        return price <= parseFloat(priceRange.max);
+      });
     }
 
     // Sort products
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "price_low":
-          return a.price - b.price;
+          const priceA =
+            typeof a.price === "string" ? parseFloat(a.price) : a.price;
+          const priceB =
+            typeof b.price === "string" ? parseFloat(b.price) : b.price;
+          return priceA - priceB;
         case "price_high":
-          return b.price - a.price;
+          const priceAHigh =
+            typeof a.price === "string" ? parseFloat(a.price) : a.price;
+          const priceBHigh =
+            typeof b.price === "string" ? parseFloat(b.price) : b.price;
+          return priceBHigh - priceAHigh;
         case "name":
           return a.name.localeCompare(b.name);
         case "stock":
-          return b.stock_quantity - a.stock_quantity;
+          return (b.quantity || 0) - (a.quantity || 0);
         default:
           return 0;
       }
@@ -297,10 +207,8 @@ export default function ProductCatalog() {
 
   const getUniqueCategories = () => {
     if (!products || products.length === 0) return [];
-    const categories = products
-      .map((p) => p.category_id)
-      .filter((id, index, arr) => id && arr.indexOf(id) === index);
-    return categories;
+    // For now, just return some basic categories since Laravel API might not have category_id
+    return ["Electronics", "Accessories", "Audio"];
   };
 
   const activeFiltersCount = [
@@ -332,25 +240,11 @@ export default function ProductCatalog() {
                 Discover our wide range of products
               </p>
             </div>
-
-            {isOffline && (
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 px-3 py-2 bg-yellow-100 text-yellow-800 rounded-lg">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                  <span className="text-sm font-medium">Demo Mode</span>
-                </div>
-                <Button
-                  onClick={tryConnectToAPI}
-                  variant="outline"
-                  className="border-metallic-primary text-metallic-primary"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Connecting..." : "Connect to API"}
-                </Button>
-              </div>
-            )}
           </div>
         </div>
+
+        {/* Offline Banner */}
+        <OfflineBanner isOffline={isOffline} onRetry={loadProducts} />
 
         {/* Search and Filters */}
         <Card className="mb-6">
@@ -380,19 +274,11 @@ export default function ProductCatalog() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Categories</SelectItem>
-                    {getUniqueCategories()
-                      .filter(
-                        (categoryId) =>
-                          categoryId !== null && categoryId !== undefined,
-                      )
-                      .map((categoryId) => (
-                        <SelectItem
-                          key={categoryId}
-                          value={categoryId!.toString()}
-                        >
-                          Category {categoryId}
-                        </SelectItem>
-                      ))}
+                    {getUniqueCategories().map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
 

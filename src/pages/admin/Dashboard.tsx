@@ -39,13 +39,13 @@ export default function AdminDashboard() {
 
   const loadDashboardData = async () => {
     try {
-      const [dashboardResponse, lowStockResponse] = await Promise.all([
-        api.getAdminDashboard(),
-        api.getLowStockProducts(),
-      ]);
+      const dashboardResponse = await api.getAdminDashboard();
 
       setStats(dashboardResponse);
-      setLowStockProducts(lowStockResponse.data);
+      // Use low stock products from dashboard response if available
+      if (dashboardResponse.low_stock_products) {
+        setLowStockProducts(dashboardResponse.low_stock_products);
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -99,7 +99,7 @@ export default function AdminDashboard() {
           />
           <StatsCard
             title="Low Stock Items"
-            value={stats?.low_stock_count?.toString() || "0"}
+            value={stats?.low_stock_count || lowStockProducts.length || 0}
             icon={AlertTriangle}
             trend={`${lowStockProducts.length} products need attention`}
             color="from-yellow-500 to-orange-500"
@@ -188,34 +188,26 @@ export default function AdminDashboard() {
                 <CardTitle>Popular Products</CardTitle>
               </CardHeader>
               <CardContent>
-                {stats?.popular_products &&
-                stats.popular_products.length > 0 ? (
+                {stats?.top_products && stats.top_products.length > 0 ? (
                   <div className="space-y-3">
-                    {stats.popular_products
-                      .slice(0, 5)
-                      .map((product, index) => (
-                        <div
-                          key={product.id}
-                          className="flex items-center gap-3"
-                        >
-                          <div className="w-8 h-8 rounded-full bg-metallic-primary text-white flex items-center justify-center text-sm font-medium">
-                            {index + 1}
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-medium text-sm">
-                              {product.name}
-                            </p>
-                            <p className="text-xs text-metallic-accent">
-                              ${product.price.toFixed(2)}
-                            </p>
-                          </div>
-                          <Link to={`/admin/products/${product.id}`}>
-                            <Button variant="ghost" size="icon">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </Link>
+                    {stats.top_products.slice(0, 5).map((product, index) => (
+                      <div key={product.id} className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-metallic-primary text-white flex items-center justify-center text-sm font-medium">
+                          {index + 1}
                         </div>
-                      ))}
+                        <div className="flex-1">
+                          <p className="font-medium text-sm">{product.name}</p>
+                          <p className="text-xs text-metallic-accent">
+                            ${product.price.toFixed(2)}
+                          </p>
+                        </div>
+                        <Link to={`/admin/products/${product.id}`}>
+                          <Button variant="ghost" size="icon">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <p className="text-center text-metallic-accent">
@@ -226,6 +218,44 @@ export default function AdminDashboard() {
             </Card>
           </div>
         </div>
+
+        {/* Recent Order Notifications */}
+        <Card className="mt-6 border-blue-200 bg-blue-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-blue-800">
+              <Package className="h-5 w-5" />
+              Recent Orders
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-blue-700">
+                New orders will appear here automatically. Check notifications
+                bell in the navbar for real-time updates.
+              </p>
+              <div className="bg-white p-4 rounded-lg border">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                      <Bell className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        Live Order Notifications
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Get notified instantly when customers place orders
+                      </p>
+                    </div>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800">
+                    ✓ Active
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Low Stock Alert */}
         {lowStockProducts.length > 0 && (

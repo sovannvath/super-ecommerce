@@ -24,7 +24,11 @@ export default function Cart() {
     try {
       setIsLoading(true);
       const response = await api.getCart();
-      setCartItems(response.items || []);
+      // Handle different response formats
+      const items = Array.isArray(response)
+        ? response
+        : response.items || response.data || [];
+      setCartItems(items);
     } catch (error) {
       console.error("Error loading cart:", error);
       toast({
@@ -42,7 +46,7 @@ export default function Cart() {
 
     try {
       setUpdatingItems((prev) => new Set(prev).add(itemId));
-      await api.updateCartItem(itemId, { quantity: newQuantity });
+      await api.updateCartItem(itemId, newQuantity);
       setCartItems((prev) =>
         prev.map((item) =>
           item.id === itemId ? { ...item, quantity: newQuantity } : item,
@@ -71,7 +75,7 @@ export default function Cart() {
   const removeItem = async (itemId: number) => {
     try {
       setUpdatingItems((prev) => new Set(prev).add(itemId));
-      await api.removeCartItem(itemId);
+      await api.removeFromCart(itemId);
       setCartItems((prev) => prev.filter((item) => item.id !== itemId));
       toast({
         title: "Item Removed",

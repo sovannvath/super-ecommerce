@@ -14,6 +14,7 @@ interface AuthContextType {
   ) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
+  getUserRole: () => string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,24 +34,57 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [connectionError, setConnectionError] = useState(false);
   const { toast } = useToast();
 
-  const checkAuth = async () => {
+  const checkAuth = async (retryCount = 0) => {
     try {
       const token = localStorage.getItem("auth_token");
       if (token) {
         api.setToken(token);
         const userData = await api.getUser();
         setUser(userData);
+        setConnectionError(false);
       }
     } catch (error) {
       console.error("Auth check failed:", error);
-      // Token is invalid or server is unreachable, clear it
-      localStorage.removeItem("auth_token");
-      api.clearToken();
-      setUser(null);
+
+      // Check if it's a network error (Failed to fetch)
+      const isNetworkError =
+        error instanceof Error &&
+        (error.message.includes("Failed to fetch") ||
+          error.message.includes("Network error") ||
+          error.message.includes("Unable to connect") ||
+          error.message.includes("fetch"));
+
+      if (isNetworkError && retryCount < 2) {
+        // Retry up to 2 times for network errors with exponential backoff
+        console.log(`Retrying auth check (attempt ${retryCount + 1}/2)...`);
+        setConnectionError(true);
+        setTimeout(
+          () => {
+            checkAuth(retryCount + 1);
+          },
+          Math.pow(2, retryCount) * 1000,
+        ); // 1s, 2s delays
+        return;
+      }
+
+      // If it's not a network error or we've exhausted retries, clear auth
+      if (!isNetworkError || retryCount >= 2) {
+        console.log("Clearing authentication due to persistent error");
+        localStorage.removeItem("auth_token");
+        api.clearToken();
+        setUser(null);
+        if (isNetworkError) {
+          setConnectionError(true);
+        }
+      }
     } finally {
-      setIsLoading(false);
+      // Only set loading to false on final attempt or success
+      if (retryCount === 0) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -91,7 +125,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   ) => {
     try {
       setIsLoading(true);
-      const response = await api.register({ name, email, password, role });
+      const response = await api.register({
+        name,
+        email,
+        password,
+        password_confirmation: password,
+        role,
+      });
       api.setToken(response.token);
       setUser(response.user);
       toast({
@@ -126,6 +166,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const getUserRole = (): string => {
+    if (!user) return "guest";
+    if (user.role) return user.role;
+
+    // Map Laravel role_id to role names
+    const roleMap: { [key: number]: string } = {
+      1: "admin",
+      2: "staff",
+      3: "customer",
+      4: "warehouse",
+    };
+
+    return roleMap[user.role_id || 3] || "customer";
+  };
+
   const value: AuthContextType = {
     user,
     isLoading,
@@ -133,6 +188,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     register,
     logout,
     isAuthenticated: !!user,
+    getUserRole,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

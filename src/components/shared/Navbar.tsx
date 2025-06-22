@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -28,10 +29,32 @@ import {
 import { NotificationPanel } from "./NotificationPanel";
 
 export const Navbar: React.FC = () => {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated, getUserRole } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [cartItemCount, setCartItemCount] = useState(0);
+
+  // Load cart item count for customers
+  useEffect(() => {
+    if (user && getUserRole() === "customer") {
+      loadCartCount();
+    }
+  }, [user, getUserRole]);
+
+  const loadCartCount = async () => {
+    try {
+      const response = await api.getCart();
+      const items = Array.isArray(response)
+        ? response
+        : response.items || response.data || [];
+      setCartItemCount(items.length);
+    } catch (error) {
+      // Silently handle cart loading errors - don't crash the app
+      console.warn("Cart loading failed, using fallback:", error);
+      setCartItemCount(0);
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -51,7 +74,12 @@ export const Navbar: React.FC = () => {
         return [
           ...baseItems,
           { href: "/customer/dashboard", icon: BarChart3, label: "Dashboard" },
-          { href: "/cart", icon: ShoppingCart, label: "Cart" },
+          {
+            href: "/customer/cart",
+            icon: ShoppingCart,
+            label: "Cart",
+            badge: cartItemCount > 0 ? cartItemCount : null,
+          },
           { href: "/customer/orders", icon: Package, label: "My Orders" },
         ];
       case "admin":
@@ -79,9 +107,9 @@ export const Navbar: React.FC = () => {
         return [
           { href: "/staff/dashboard", icon: BarChart3, label: "Dashboard" },
           {
-            href: "/staff/order-approval",
+            href: "/staff/orders",
             icon: ShoppingCart,
-            label: "Order Approval",
+            label: "Order Processing",
           },
         ];
       default:
@@ -91,174 +119,187 @@ export const Navbar: React.FC = () => {
 
   const navItems = getNavItems();
 
-  if (!isAuthenticated) {
-    return (
-      <nav className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-        <div className="container mx-auto px-4">
-          <div className="flex h-16 items-center justify-between">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="p-2 bg-metallic-primary rounded-lg">
-                <ShoppingBag className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-metallic-primary">
-                  ShopSync
-                </h1>
-              </div>
+  return (
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center">
+        <div className="mr-4 hidden md:flex">
+          <Link to="/" className="mr-6 flex items-center space-x-2">
+            <ShoppingBag className="h-6 w-6" />
+            <span className="hidden font-bold sm:inline-block">E-Commerce</span>
+          </Link>
+          <nav className="flex items-center space-x-6 text-sm font-medium">
+            {/* Always show Products for everyone */}
+            <Link
+              to="/products"
+              className={`text-foreground/60 transition-colors hover:text-foreground/80 ${
+                location.pathname === "/products" ? "text-foreground" : ""
+              }`}
+            >
+              Products
             </Link>
 
-            <div className="flex items-center gap-4">
-              <Link to="/products">
-                <Button variant="ghost" className="text-metallic-accent">
-                  Products
-                </Button>
-              </Link>
-              <Link to="/auth/login">
-                <Button
-                  variant="outline"
-                  className="border-metallic-primary text-metallic-primary"
-                >
-                  Sign In
-                </Button>
-              </Link>
-              <Link to="/auth/register">
-                <Button className="bg-metallic-primary hover:bg-metallic-primary/90">
-                  Sign Up
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
-    );
-  }
-
-  const isActive = (href: string) => {
-    if (href === "/") return location.pathname === "/";
-    return location.pathname.startsWith(href);
-  };
-
-  return (
-    <nav className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="p-2 bg-metallic-primary rounded-lg">
-              <ShoppingBag className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-metallic-primary">
-                ShopSync
-              </h1>
-              <Badge
-                variant="secondary"
-                className="text-xs bg-metallic-accent/20 text-metallic-primary"
-              >
-                {user.role}
-              </Badge>
-            </div>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link key={item.href} to={item.href}>
-                  <Button
-                    variant={isActive(item.href) ? "default" : "ghost"}
-                    className={
-                      isActive(item.href)
-                        ? "bg-metallic-primary hover:bg-metallic-primary/90"
-                        : "text-metallic-accent hover:text-metallic-primary"
-                    }
+            {/* Show specific nav items based on role */}
+            {navItems
+              .filter((item) => item.href !== "/products")
+              .map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.href}
+                    className={`text-foreground/60 transition-colors hover:text-foreground/80 flex items-center gap-1 ${
+                      location.pathname === item.href ? "text-foreground" : ""
+                    }`}
                   >
-                    <Icon className="h-4 w-4 mr-2" />
+                    <Icon className="h-4 w-4" />
                     {item.label}
-                  </Button>
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* Right side actions */}
-          <div className="flex items-center gap-2">
-            {/* Notifications */}
+                    {item.badge && (
+                      <Badge className="bg-red-500 text-white text-xs">
+                        {item.badge}
+                      </Badge>
+                    )}
+                  </Link>
+                );
+              })}
+          </nav>
+        </div>
+        <Sheet>
+          <SheetTrigger asChild>
             <Button
               variant="ghost"
-              size="icon"
-              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-              className="relative"
+              className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
             >
-              <Bell className="h-5 w-5" />
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500">
-                3
-              </Badge>
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Toggle Menu</span>
             </Button>
-
-            {/* User Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <User className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">{user.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {user.email}
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* Mobile Menu */}
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-80">
-                <div className="flex flex-col gap-4 mt-8">
-                  {navItems.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link key={item.href} to={item.href}>
-                        <Button
-                          variant={isActive(item.href) ? "default" : "ghost"}
-                          className={`w-full justify-start ${
-                            isActive(item.href)
-                              ? "bg-metallic-primary hover:bg-metallic-primary/90"
-                              : "text-metallic-accent hover:text-metallic-primary"
-                          }`}
-                        >
-                          <Icon className="h-4 w-4 mr-2" />
-                          {item.label}
-                        </Button>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </SheetContent>
-            </Sheet>
+          </SheetTrigger>
+          <SheetContent side="left" className="pr-0">
+            <Link to="/" className="flex items-center space-x-2">
+              <ShoppingBag className="h-6 w-6" />
+              <span className="font-bold">E-Commerce</span>
+            </Link>
+            <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
+              <div className="flex flex-col space-y-3">
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.label}
+                      to={item.href}
+                      className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${
+                        location.pathname === item.href
+                          ? "bg-muted text-primary"
+                          : ""
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {item.label}
+                      {item.badge && (
+                        <Badge className="ml-auto bg-red-500 text-white">
+                          {item.badge}
+                        </Badge>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
+        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+          <div className="w-full flex-1 md:w-auto md:flex-none">
+            <Link to="/products" className="md:hidden">
+              <Button variant="ghost">Products</Button>
+            </Link>
           </div>
+          <nav className="flex items-center space-x-2">
+            {/* Cart and Notifications - prominently displayed for all users */}
+            {isAuthenticated && user?.role === "customer" && (
+              <Link to="/customer/cart">
+                <Button variant="ghost" size="icon" className="relative">
+                  <ShoppingCart className="h-5 w-5" />
+                  {cartItemCount > 0 && (
+                    <Badge className="absolute -top-1 -right-1 bg-red-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center rounded-full">
+                      {cartItemCount}
+                    </Badge>
+                  )}
+                  <span className="sr-only">Shopping cart</span>
+                </Button>
+              </Link>
+            )}
+
+            {isAuthenticated && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsNotificationOpen(true)}
+                className="relative"
+              >
+                <Bell className="h-5 w-5" />
+                {/* Notification badge - you can add unread count here */}
+                <Badge className="absolute -top-1 -right-1 bg-red-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="animate-pulse">•</span>
+                </Badge>
+                <span className="sr-only">Notifications</span>
+              </Button>
+            )}
+            {!isAuthenticated ? (
+              <>
+                <Link to="/auth/login">
+                  <Button variant="ghost">Login</Button>
+                </Link>
+                <Link to="/auth/register">
+                  <Button>Sign Up</Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsNotificationOpen(true)}
+                  className="relative"
+                >
+                  <Bell className="h-4 w-4" />
+                  <span className="sr-only">Notifications</span>
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <User className="h-4 w-4" />
+                      <span className="sr-only">User menu</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <User className="mr-2 h-4 w-4" />
+                      <span>{user?.name}</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <span className="text-sm text-muted-foreground">
+                        {user?.email}
+                      </span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            )}
+          </nav>
         </div>
       </div>
-
-      {/* Notification Panel */}
       {isNotificationOpen && (
-        <NotificationPanel onClose={() => setIsNotificationOpen(false)} />
+        <NotificationPanel
+          isOpen={isNotificationOpen}
+          onClose={() => setIsNotificationOpen(false)}
+        />
       )}
-    </nav>
+    </header>
   );
 };

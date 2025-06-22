@@ -28,7 +28,24 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to={redirectTo} replace />;
   }
 
-  if (allowedRoles && user && !allowedRoles.includes(user.role)) {
+  // Convert role_id to role name for Laravel API compatibility
+  const getUserRole = (user: any): string => {
+    if (user.role) return user.role;
+
+    // Map Laravel role_id to role names
+    const roleMap: { [key: number]: string } = {
+      1: "admin",
+      2: "staff",
+      3: "customer",
+      4: "warehouse",
+    };
+
+    return roleMap[user.role_id] || "customer";
+  };
+
+  const userRole = user ? getUserRole(user) : null;
+
+  if (allowedRoles && user && !allowedRoles.includes(userRole)) {
     // Redirect to appropriate dashboard based on user role
     const roleRedirects = {
       customer: "/customer/dashboard",
@@ -37,10 +54,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       staff: "/staff/dashboard",
     };
     return (
-      <Navigate
-        to={roleRedirects[user.role] || "/customer/dashboard"}
-        replace
-      />
+      <Navigate to={roleRedirects[userRole] || "/customer/dashboard"} replace />
     );
   }
 

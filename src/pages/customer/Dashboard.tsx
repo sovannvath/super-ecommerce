@@ -1,28 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { api, type Order, type DashboardStats } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import {
-  ShoppingCart,
   Package,
+  ShoppingCart,
+  ShoppingBag,
+  User,
+  CreditCard,
+  MapPin,
   Clock,
-  CheckCircle,
-  Truck,
-  Heart,
   TrendingUp,
+  Star,
+  Plus,
+  ArrowRight,
+  Grid3X3,
 } from "lucide-react";
 
 export default function CustomerDashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
     loadDashboardData();
@@ -48,20 +54,7 @@ export default function CustomerDashboard() {
     }
   };
 
-  const getOrderStatusIcon = (status: string) => {
-    switch (status) {
-      case "pending":
-        return <Clock className="h-4 w-4 text-yellow-500" />;
-      case "approved":
-        return <CheckCircle className="h-4 w-4 text-blue-500" />;
-      case "delivered":
-        return <Truck className="h-4 w-4 text-green-500" />;
-      default:
-        return <Package className="h-4 w-4 text-gray-500" />;
-    }
-  };
-
-  const getOrderStatusColor = (status: string) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case "pending":
         return "bg-yellow-100 text-yellow-800";
@@ -76,6 +69,37 @@ export default function CustomerDashboard() {
     }
   };
 
+  const sidebarItems = [
+    {
+      icon: Grid3X3,
+      label: "Browse Products",
+      href: "/products",
+      description: "Explore our catalog",
+      color: "from-blue-500 to-blue-600",
+    },
+    {
+      icon: ShoppingCart,
+      label: "My Cart",
+      href: "/customer/cart",
+      description: "Review items",
+      color: "from-green-500 to-green-600",
+    },
+    {
+      icon: Package,
+      label: "My Orders",
+      href: "/customer/orders",
+      description: "Track purchases",
+      color: "from-purple-500 to-purple-600",
+    },
+    {
+      icon: User,
+      label: "Profile",
+      href: "/customer/profile",
+      description: "Account settings",
+      color: "from-orange-500 to-orange-600",
+    },
+  ];
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -85,203 +109,277 @@ export default function CustomerDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-metallic-bg via-metallic-light/20 to-metallic-accent/20">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-metallic-primary mb-2">
-            Welcome back, {user?.name}!
-          </h1>
-          <p className="text-metallic-accent">
-            Here's what's happening with your orders and account
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <div className="flex">
+        {/* Sidebar */}
+        <div className="w-80 bg-white border-r border-gray-200 min-h-screen p-6">
+          <div className="mb-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">
+              Welcome back, {user?.name}!
+            </h2>
+            <p className="text-gray-600">Manage your shopping experience</p>
+          </div>
+
+          <div className="space-y-4">
+            {sidebarItems.map((item) => (
+              <Link key={item.href} to={item.href}>
+                <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-gray-100 hover:border-blue-200">
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-4">
+                      <div
+                        className={`p-3 bg-gradient-to-r ${item.color} rounded-lg text-white group-hover:scale-110 transition-transform`}
+                      >
+                        <item.icon className="h-6 w-6" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                          {item.label}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {item.description}
+                        </p>
+                      </div>
+                      <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+
+          {/* Quick Stats in Sidebar */}
+          <Card className="mt-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+            <CardContent className="p-4">
+              <h3 className="font-semibold mb-2">Your Activity</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>Total Orders:</span>
+                  <span className="font-bold">{stats?.total_orders || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>This Month:</span>
+                  <span className="font-bold">
+                    {stats?.monthly_orders || 0}
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Link to="/products">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-metallic-primary to-metallic-secondary text-white">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-white/20 rounded-lg">
-                    <Package className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <p className="text-sm opacity-90">Browse</p>
-                    <h3 className="font-semibold text-lg">Products</h3>
-                  </div>
+        {/* Main Content */}
+        <div className="flex-1 p-6">
+          {/* Welcome Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
+            <p className="text-gray-600">Overview of your shopping activity</p>
+          </div>
+
+          {/* Quick Action Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer group"
+              onClick={() => navigate("/products")}
+            >
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <ShoppingBag className="h-8 w-8 text-white" />
                 </div>
+                <h3 className="font-semibold text-lg mb-2 group-hover:text-blue-600 transition-colors">
+                  Start Shopping
+                </h3>
+                <p className="text-gray-600 text-sm mb-4">
+                  Browse our latest products and find great deals
+                </p>
+                <Button className="w-full bg-blue-500 hover:bg-blue-600">
+                  Browse Products
+                  <Plus className="h-4 w-4 ml-2" />
+                </Button>
               </CardContent>
             </Card>
-          </Link>
 
-          <Link to="/cart">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-metallic-secondary to-metallic-accent text-white">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-white/20 rounded-lg">
-                    <ShoppingCart className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <p className="text-sm opacity-90">View</p>
-                    <h3 className="font-semibold text-lg">Cart</h3>
-                  </div>
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer group"
+              onClick={() => navigate("/customer/cart")}
+            >
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <ShoppingCart className="h-8 w-8 text-white" />
                 </div>
+                <h3 className="font-semibold text-lg mb-2 group-hover:text-green-600 transition-colors">
+                  Shopping Cart
+                </h3>
+                <p className="text-gray-600 text-sm mb-4">
+                  Review items and proceed to checkout
+                </p>
+                <Button
+                  variant="outline"
+                  className="w-full border-green-500 text-green-600 hover:bg-green-50"
+                >
+                  View Cart
+                  <ShoppingCart className="h-4 w-4 ml-2" />
+                </Button>
               </CardContent>
             </Card>
-          </Link>
 
-          <Link to="/customer/orders">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-metallic-accent to-metallic-light text-metallic-primary">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-metallic-primary/20 rounded-lg">
-                    <Clock className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <p className="text-sm opacity-90">Track</p>
-                    <h3 className="font-semibold text-lg">Orders</h3>
-                  </div>
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer group"
+              onClick={() => navigate("/customer/orders")}
+            >
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <Package className="h-8 w-8 text-white" />
                 </div>
+                <h3 className="font-semibold text-lg mb-2 group-hover:text-purple-600 transition-colors">
+                  Order History
+                </h3>
+                <p className="text-gray-600 text-sm mb-4">
+                  Track your orders and delivery status
+                </p>
+                <Button
+                  variant="outline"
+                  className="w-full border-purple-500 text-purple-600 hover:bg-purple-50"
+                >
+                  View Orders
+                  <Package className="h-4 w-4 ml-2" />
+                </Button>
               </CardContent>
             </Card>
-          </Link>
+          </div>
 
-          <Link to="/customer/wishlist">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-pink-400 to-red-400 text-white">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-white/20 rounded-lg">
-                    <Heart className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <p className="text-sm opacity-90">My</p>
-                    <h3 className="font-semibold text-lg">Wishlist</h3>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Recent Orders */}
-          <div className="lg:col-span-2">
+          {/* Stats Overview */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <Card>
-              <CardHeader>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Total Orders</p>
+                    <h3 className="text-2xl font-bold text-gray-900">
+                      {stats?.total_orders || 0}
+                    </h3>
+                  </div>
+                  <Package className="h-8 w-8 text-blue-500" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Total Spent</p>
+                    <h3 className="text-2xl font-bold text-gray-900">
+                      ${stats?.total_spent || "0.00"}
+                    </h3>
+                  </div>
+                  <CreditCard className="h-8 w-8 text-green-500" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Pending Orders</p>
+                    <h3 className="text-2xl font-bold text-gray-900">
+                      {stats?.pending_orders || 0}
+                    </h3>
+                  </div>
+                  <Clock className="h-8 w-8 text-yellow-500" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Saved Items</p>
+                    <h3 className="text-2xl font-bold text-gray-900">
+                      {stats?.wishlist_items || 0}
+                    </h3>
+                  </div>
+                  <Star className="h-8 w-8 text-purple-500" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Recent Orders */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
-                  <Package className="h-5 w-5 text-metallic-primary" />
+                  <Package className="h-5 w-5 text-blue-500" />
                   Recent Orders
                 </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {recentOrders.length === 0 ? (
-                  <div className="text-center py-8 text-metallic-accent">
-                    <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p className="mb-4">No orders yet</p>
-                    <Link to="/products">
-                      <Button className="bg-metallic-primary hover:bg-metallic-primary/90">
-                        Start Shopping
-                      </Button>
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {recentOrders.map((order) => (
-                      <div
-                        key={order.id}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-metallic-bg/50 transition-colors"
-                      >
-                        <div className="flex items-center gap-3">
-                          {getOrderStatusIcon(order.status)}
-                          <div>
-                            <p className="font-medium">Order #{order.id}</p>
-                            <p className="text-sm text-metallic-accent">
-                              {new Date(order.created_at).toLocaleDateString()}
-                            </p>
-                          </div>
+                <Link to="/customer/orders">
+                  <Button variant="outline" size="sm">
+                    View All Orders
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {recentOrders.length === 0 ? (
+                <div className="text-center py-8">
+                  <Package className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    No orders yet
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    Start shopping to see your orders here
+                  </p>
+                  <Link to="/products">
+                    <Button className="bg-blue-500 hover:bg-blue-600">
+                      Browse Products
+                      <ShoppingBag className="h-4 w-4 ml-2" />
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {recentOrders.map((order) => (
+                    <div
+                      key={order.id}
+                      className="flex items-center justify-between p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <Package className="h-5 w-5 text-blue-600" />
                         </div>
-                        <div className="flex items-center gap-3">
-                          <div className="text-right">
-                            <p className="font-semibold">
-                              ${order.total_amount.toFixed(2)}
-                            </p>
-                            <Badge
-                              className={`text-xs ${getOrderStatusColor(order.status)}`}
-                            >
-                              {order.status}
-                            </Badge>
-                          </div>
-                          <Link to={`/customer/orders/${order.id}`}>
-                            <Button variant="outline" size="sm">
-                              View
-                            </Button>
-                          </Link>
+                        <div>
+                          <p className="font-semibold text-gray-900">
+                            Order #{order.id}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {new Date(order.created_at).toLocaleDateString()}
+                          </p>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Account Overview */}
-          <div className="space-y-6">
-            {/* Order Stats */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-metallic-primary" />
-                  Order Summary
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-metallic-accent">Total Orders</span>
-                  <span className="font-semibold">
-                    {stats?.total_orders || 0}
-                  </span>
+                      <div className="flex items-center space-x-4">
+                        <Badge className={getStatusColor(order.status)}>
+                          {order.status.charAt(0).toUpperCase() +
+                            order.status.slice(1)}
+                        </Badge>
+                        <p className="font-semibold text-gray-900">
+                          ${Number(order.total_amount).toFixed(2)}
+                        </p>
+                        <Link to={`/customer/orders/${order.id}`}>
+                          <Button variant="ghost" size="sm">
+                            View
+                            <ArrowRight className="h-4 w-4 ml-1" />
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-metallic-accent">Pending</span>
-                  <Badge className="bg-yellow-100 text-yellow-800">
-                    {stats?.pending_orders || 0}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-metallic-accent">Total Spent</span>
-                  <span className="font-semibold text-metallic-primary">
-                    ${stats?.total_income?.toFixed(2) || "0.00"}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Links */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Links</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Link to="/customer/profile">
-                  <Button variant="outline" className="w-full justify-start">
-                    <span>Edit Profile</span>
-                  </Button>
-                </Link>
-                <Link to="/customer/addresses">
-                  <Button variant="outline" className="w-full justify-start">
-                    <span>Manage Addresses</span>
-                  </Button>
-                </Link>
-                <Link to="/customer/support">
-                  <Button variant="outline" className="w-full justify-start">
-                    <span>Contact Support</span>
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

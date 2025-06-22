@@ -78,7 +78,7 @@ The system integrates with a Laravel backend at `https://laravel-wtc.onrender.co
 - `POST /products` - Create product (Admin)
 - `PUT /products/{id}` - Update product (Admin)
 - `DELETE /products/{id}` - Delete product (Admin)
-- `GET /products/low-stock` - Get low stock products
+- Note: Low stock products are available through dashboard stats endpoints
 
 ### Cart & Orders
 
