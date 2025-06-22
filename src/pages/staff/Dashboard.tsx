@@ -133,19 +133,21 @@ export default function StaffDashboard() {
 
       // Update local state
       setOrders((prev) =>
-        prev.map((order) =>
-          order.id === selectedOrder.id
-            ? {
-                ...order,
-                status:
-                  actionType === "approve"
-                    ? "approved"
-                    : actionType === "deliver"
-                      ? "delivered"
-                      : order.status,
-              }
-            : order,
-        ),
+        Array.isArray(prev)
+          ? prev.map((order) =>
+              order.id === selectedOrder.id
+                ? {
+                    ...order,
+                    status:
+                      actionType === "approve"
+                        ? "approved"
+                        : actionType === "deliver"
+                          ? "delivered"
+                          : order.status,
+                  }
+                : order,
+            )
+          : prev,
       );
     } catch (error) {
       toast({
