@@ -133,6 +133,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const getUserRole = (): string => {
+    if (!user) return "guest";
+    if (user.role) return user.role;
+
+    // Map Laravel role_id to role names
+    const roleMap: { [key: number]: string } = {
+      1: "admin",
+      2: "staff",
+      3: "customer",
+      4: "warehouse",
+    };
+
+    return roleMap[user.role_id || 3] || "customer";
+  };
+
   const value: AuthContextType = {
     user,
     isLoading,
