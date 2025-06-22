@@ -42,6 +42,7 @@ import OrderProcessing from "./pages/staff/OrderProcessing";
 
 // Demo components
 import LaravelApiDemo from "./components/LaravelApiDemo";
+import ApiValidation from "./components/ApiValidation";
 
 const queryClient = new QueryClient();
 
