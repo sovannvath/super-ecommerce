@@ -107,11 +107,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <div className="flex gap-6">
               {/* Product Image */}
               <div className="w-32 h-32 bg-metallic-bg rounded-lg flex items-center justify-center flex-shrink-0">
-                {product.image_url ? (
+                {product.image ? (
                   <img
-                    src={product.image_url}
+                    src={product.image}
                     alt={product.name}
                     className="w-full h-full object-cover rounded-lg"
+                    onError={(e) => {
+                      e.currentTarget.src = "/placeholder.svg";
+                    }}
                   />
                 ) : (
                   <Package className="h-12 w-12 text-metallic-accent" />
