@@ -84,6 +84,14 @@ const App = () => (
                 </LayoutWrapper>
               }
             />
+            <Route
+              path="/api-demo"
+              element={
+                <LayoutWrapper>
+                  <LaravelApiDemo />
+                </LayoutWrapper>
+              }
+            />
 
             {/* Auth routes */}
             <Route path="/auth/login" element={<Login />} />
