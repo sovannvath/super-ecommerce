@@ -28,6 +28,7 @@ import Checkout from "./pages/customer/Checkout";
 import Orders from "./pages/customer/Orders";
 import OrderDetail from "./pages/customer/OrderDetail";
 import CheckoutSuccess from "./pages/customer/CheckoutSuccess";
+import TestFlow from "./pages/TestFlow";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -100,6 +101,9 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+
+            {/* Test Flow Route */}
+            <Route path="/test-flow" element={<TestFlow />} />
 
             {/* Auth routes */}
             <Route path="/auth/login" element={<Login />} />
