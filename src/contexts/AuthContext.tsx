@@ -44,9 +44,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(userData);
       }
     } catch (error) {
-      // Token is invalid, clear it
+      console.error("Auth check failed:", error);
+      // Token is invalid or server is unreachable, clear it
       localStorage.removeItem("auth_token");
       api.clearToken();
+      setUser(null);
     } finally {
       setIsLoading(false);
     }
