@@ -30,6 +30,8 @@ import OrderDetail from "./pages/customer/OrderDetail";
 // Admin pages
 import AdminDashboard from "./pages/admin/Dashboard";
 import ProductManagement from "./pages/admin/ProductManagement";
+import ProductForm from "./pages/admin/ProductForm";
+import ProductDetail from "./pages/admin/ProductDetail";
 import RequestOrders from "./pages/admin/RequestOrders";
 
 // Warehouse pages
