@@ -280,12 +280,14 @@ export default function ProductCatalog() {
                 <Button
                   onClick={() => {
                     setIsLoading(true);
-                    loadProducts(0);
+                    setIsOffline(false);
+                    loadProducts();
                   }}
                   variant="outline"
                   className="border-metallic-primary text-metallic-primary"
+                  disabled={isLoading}
                 >
-                  Retry Connection
+                  {isLoading ? "Connecting..." : "Retry Connection"}
                 </Button>
               </div>
             )}
