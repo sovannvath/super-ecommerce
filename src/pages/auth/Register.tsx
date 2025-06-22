@@ -29,7 +29,7 @@ export default function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { register } = useAuth();
+  const { register, getUserRole } = useAuth();
   const navigate = useNavigate();
 
   const handleInputChange = (field: string, value: string) => {
