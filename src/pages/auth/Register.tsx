@@ -74,7 +74,18 @@ export default function Register() {
         formData.password,
         formData.role,
       );
-      navigate("/", { replace: true });
+
+      // Role-based navigation after registration
+      const userRole = getUserRole();
+      const dashboardRoutes = {
+        customer: "/",
+        admin: "/admin/dashboard",
+        warehouse: "/warehouse/dashboard",
+        staff: "/staff/dashboard",
+      };
+
+      const redirectTo = dashboardRoutes[userRole] || "/";
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
