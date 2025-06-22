@@ -40,10 +40,6 @@ import WarehouseRequestOrders from "./pages/warehouse/RequestOrders";
 import StaffDashboard from "./pages/staff/Dashboard";
 import OrderProcessing from "./pages/staff/OrderProcessing";
 
-// Demo components
-import LaravelApiDemo from "./components/LaravelApiDemo";
-import ApiValidation from "./components/ApiValidation";
-
 const queryClient = new QueryClient();
 
 // Layout wrapper for authenticated pages
