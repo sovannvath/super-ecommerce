@@ -27,6 +27,7 @@ import Cart from "./pages/customer/Cart";
 import Checkout from "./pages/customer/Checkout";
 import Orders from "./pages/customer/Orders";
 import OrderDetail from "./pages/customer/OrderDetail";
+import CheckoutSuccess from "./pages/customer/CheckoutSuccess";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -164,6 +165,14 @@ const App = () => (
                   <LayoutWrapper>
                     <OrderDetail />
                   </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/customer/checkout/success"
+              element={
+                <ProtectedRoute allowedRoles={["customer"]}>
+                  <CheckoutSuccess />
                 </ProtectedRoute>
               }
             />

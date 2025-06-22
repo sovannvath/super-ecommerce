@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { api, type Product } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -10,17 +10,19 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
-import { ArrowLeft, ShoppingCart, Heart } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Heart, Plus } from "lucide-react";
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -73,6 +75,42 @@ export default function ProductDetail() {
       });
     } finally {
       setIsAddingToCart(false);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please login to make a purchase",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!product) return;
+
+    try {
+      setIsProcessing(true);
+      // Add to cart first
+      await api.addToCart(product.id, quantity);
+
+      toast({
+        title: "Proceeding to Checkout",
+        description: `${quantity} ${product.name}(s) added to cart`,
+      });
+
+      // Navigate to checkout
+      navigate("/customer/checkout");
+    } catch (error) {
+      console.error("Error processing purchase:", error);
+      toast({
+        title: "Error",
+        description: "Failed to process purchase. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -222,29 +260,63 @@ export default function ProductDetail() {
                     </Button>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="space-y-3">
+                    {/* Primary Buy Now Button */}
+                    <Button
+                      onClick={handleBuyNow}
+                      disabled={!isInStock || isProcessing}
+                      size="lg"
+                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4"
+                    >
+                      {isProcessing ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingCart className="w-5 h-5 mr-2" />
+                          Buy Now - ${(price * quantity).toFixed(2)}
+                        </>
+                      )}
+                    </Button>
+
+                    {/* Secondary Add to Cart Button */}
                     <Button
                       onClick={handleAddToCart}
                       disabled={!isInStock || isAddingToCart}
-                      className="flex-1"
                       variant="outline"
+                      size="lg"
+                      className="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-4"
                     >
-                      <ShoppingCart className="w-4 h-4 mr-2" />
-                      {isAddingToCart ? "Adding..." : "Add to Cart"}
+                      {isAddingToCart ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                          Adding...
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add to Cart
+                        </>
+                      )}
                     </Button>
-                    <Link to="/customer/cart" className="flex-1">
-                      <Button disabled={!isInStock} className="w-full">
-                        Buy Now
-                      </Button>
-                    </Link>
                   </div>
 
-                  <div className="text-center">
+                  <div className="flex justify-center gap-4 text-sm">
                     <Link
                       to="/customer/cart"
-                      className="text-sm text-primary hover:underline"
+                      className="text-blue-600 hover:text-blue-800 underline flex items-center"
                     >
+                      <ShoppingCart className="w-4 h-4 mr-1" />
                       View Cart
+                    </Link>
+                    <span className="text-gray-400">•</span>
+                    <Link
+                      to="/products"
+                      className="text-gray-600 hover:text-gray-800 underline"
+                    >
+                      Continue Shopping
                     </Link>
                   </div>
                 </div>

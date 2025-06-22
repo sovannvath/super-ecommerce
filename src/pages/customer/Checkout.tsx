@@ -110,8 +110,8 @@ export default function Checkout() {
         description: `Your order #${order.id} has been placed and is being processed.`,
       });
 
-      // Clear cart and redirect to orders
-      navigate("/customer/orders");
+      // Redirect to success page with order ID
+      navigate(`/customer/checkout/success?order_id=${order.id}`);
     } catch (error) {
       console.error("Error creating order:", error);
       toast({

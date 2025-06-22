@@ -127,25 +127,39 @@ export const Navbar: React.FC = () => {
             <span className="hidden font-bold sm:inline-block">E-Commerce</span>
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.label}
-                  to={item.href}
-                  className={`text-foreground/60 transition-colors hover:text-foreground/80 flex items-center gap-1 ${
-                    location.pathname === item.href ? "text-foreground" : ""
-                  }`}
-                >
-                  {item.label}
-                  {item.badge && (
-                    <Badge className="bg-red-500 text-white text-xs">
-                      {item.badge}
-                    </Badge>
-                  )}
-                </Link>
-              );
-            })}
+            {/* Always show Products for everyone */}
+            <Link
+              to="/products"
+              className={`text-foreground/60 transition-colors hover:text-foreground/80 ${
+                location.pathname === "/products" ? "text-foreground" : ""
+              }`}
+            >
+              Products
+            </Link>
+
+            {/* Show specific nav items based on role */}
+            {navItems
+              .filter((item) => item.href !== "/products")
+              .map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.href}
+                    className={`text-foreground/60 transition-colors hover:text-foreground/80 flex items-center gap-1 ${
+                      location.pathname === item.href ? "text-foreground" : ""
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                    {item.badge && (
+                      <Badge className="bg-red-500 text-white text-xs">
+                        {item.badge}
+                      </Badge>
+                    )}
+                  </Link>
+                );
+              })}
           </nav>
         </div>
         <Sheet>
@@ -198,6 +212,32 @@ export const Navbar: React.FC = () => {
             </Link>
           </div>
           <nav className="flex items-center space-x-2">
+            {/* Cart and Notifications - prominently displayed for all users */}
+            {isAuthenticated && user?.role === "customer" && (
+              <Link to="/customer/cart">
+                <Button variant="ghost" size="icon" className="relative">
+                  <ShoppingCart className="h-5 w-5" />
+                  {cartItemCount > 0 && (
+                    <Badge className="absolute -top-1 -right-1 bg-red-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center rounded-full">
+                      {cartItemCount}
+                    </Badge>
+                  )}
+                  <span className="sr-only">Shopping cart</span>
+                </Button>
+              </Link>
+            )}
+
+            {isAuthenticated && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsNotificationOpen(true)}
+                className="relative"
+              >
+                <Bell className="h-5 w-5" />
+                <span className="sr-only">Notifications</span>
+              </Button>
+            )}
             {!isAuthenticated ? (
               <>
                 <Link to="/auth/login">
