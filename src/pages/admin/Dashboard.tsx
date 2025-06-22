@@ -188,34 +188,26 @@ export default function AdminDashboard() {
                 <CardTitle>Popular Products</CardTitle>
               </CardHeader>
               <CardContent>
-                {stats?.popular_products &&
-                stats.popular_products.length > 0 ? (
+                {stats?.top_products && stats.top_products.length > 0 ? (
                   <div className="space-y-3">
-                    {stats.popular_products
-                      .slice(0, 5)
-                      .map((product, index) => (
-                        <div
-                          key={product.id}
-                          className="flex items-center gap-3"
-                        >
-                          <div className="w-8 h-8 rounded-full bg-metallic-primary text-white flex items-center justify-center text-sm font-medium">
-                            {index + 1}
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-medium text-sm">
-                              {product.name}
-                            </p>
-                            <p className="text-xs text-metallic-accent">
-                              ${product.price.toFixed(2)}
-                            </p>
-                          </div>
-                          <Link to={`/admin/products/${product.id}`}>
-                            <Button variant="ghost" size="icon">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </Link>
+                    {stats.top_products.slice(0, 5).map((product, index) => (
+                      <div key={product.id} className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-metallic-primary text-white flex items-center justify-center text-sm font-medium">
+                          {index + 1}
                         </div>
-                      ))}
+                        <div className="flex-1">
+                          <p className="font-medium text-sm">{product.name}</p>
+                          <p className="text-xs text-metallic-accent">
+                            ${product.price.toFixed(2)}
+                          </p>
+                        </div>
+                        <Link to={`/admin/products/${product.id}`}>
+                          <Button variant="ghost" size="icon">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <p className="text-center text-metallic-accent">
