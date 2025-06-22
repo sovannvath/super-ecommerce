@@ -249,7 +249,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
             <div className="flex items-center justify-between">
               <p className="text-xl font-bold text-metallic-primary">
-                ${product.price.toFixed(2)}
+                {formatCurrency(product.price)}
               </p>
               <Button
                 size="sm"
