@@ -71,7 +71,7 @@ export default function StaffDashboard() {
       ]);
 
       setStats(dashboardResponse);
-      setOrders(ordersResponse.data);
+      setOrders(ordersResponse.data || []);
     } catch (error) {
       toast({
         title: "Error",
