@@ -36,7 +36,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  const checkAuth = async () => {
+  const checkAuth = async (retryCount = 0) => {
     try {
       const token = localStorage.getItem("auth_token");
       if (token) {
@@ -46,12 +46,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error) {
       console.error("Auth check failed:", error);
-      // Token is invalid or server is unreachable, clear it
-      localStorage.removeItem("auth_token");
-      api.clearToken();
-      setUser(null);
+
+      // Check if it's a network error (Failed to fetch)
+      const isNetworkError =
+        error instanceof Error &&
+        (error.message.includes("Failed to fetch") ||
+          error.message.includes("Network error") ||
+          error.message.includes("fetch"));
+
+      if (isNetworkError && retryCount < 2) {
+        // Retry up to 2 times for network errors with exponential backoff
+        console.log(`Retrying auth check (attempt ${retryCount + 1}/2)...`);
+        setTimeout(
+          () => {
+            checkAuth(retryCount + 1);
+          },
+          Math.pow(2, retryCount) * 1000,
+        ); // 1s, 2s delays
+        return;
+      }
+
+      // If it's not a network error or we've exhausted retries, clear auth
+      if (!isNetworkError || retryCount >= 2) {
+        console.log("Clearing authentication due to persistent error");
+        localStorage.removeItem("auth_token");
+        api.clearToken();
+        setUser(null);
+      }
     } finally {
-      setIsLoading(false);
+      // Only set loading to false on final attempt or success
+      if (retryCount === 0) {
+        setIsLoading(false);
+      }
     }
   };
 
