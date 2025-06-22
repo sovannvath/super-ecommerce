@@ -10,6 +10,8 @@ import { Navbar } from "@/components/shared/Navbar";
 // Pages
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import ProductDetail from "./pages/ProductDetail";
+import Notifications from "./pages/Notifications";
 
 // Auth pages
 import Login from "./pages/auth/Login";
@@ -20,16 +22,23 @@ import ProductCatalog from "./pages/ProductCatalog";
 
 // Customer pages
 import CustomerDashboard from "./pages/customer/Dashboard";
+import Cart from "./pages/customer/Cart";
+import Checkout from "./pages/customer/Checkout";
+import Orders from "./pages/customer/Orders";
+import OrderDetail from "./pages/customer/OrderDetail";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/Dashboard";
 import ProductManagement from "./pages/admin/ProductManagement";
+import RequestOrders from "./pages/admin/RequestOrders";
 
 // Warehouse pages
 import WarehouseDashboard from "./pages/warehouse/Dashboard";
+import WarehouseRequestOrders from "./pages/warehouse/RequestOrders";
 
 // Staff pages
 import StaffDashboard from "./pages/staff/Dashboard";
+import OrderProcessing from "./pages/staff/OrderProcessing";
 
 const queryClient = new QueryClient();
 
@@ -64,10 +73,30 @@ const App = () => (
                 </LayoutWrapper>
               }
             />
+            <Route
+              path="/products/:id"
+              element={
+                <LayoutWrapper>
+                  <ProductDetail />
+                </LayoutWrapper>
+              }
+            />
 
             {/* Auth routes */}
             <Route path="/auth/login" element={<Login />} />
             <Route path="/auth/register" element={<Register />} />
+
+            {/* Notifications (all authenticated users) */}
+            <Route
+              path="/notifications"
+              element={
+                <ProtectedRoute>
+                  <LayoutWrapper>
+                    <Notifications />
+                  </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
 
             {/* Customer routes */}
             <Route
@@ -76,6 +105,46 @@ const App = () => (
                 <ProtectedRoute allowedRoles={["customer"]}>
                   <LayoutWrapper>
                     <CustomerDashboard />
+                  </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/customer/cart"
+              element={
+                <ProtectedRoute allowedRoles={["customer"]}>
+                  <LayoutWrapper>
+                    <Cart />
+                  </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/customer/checkout"
+              element={
+                <ProtectedRoute allowedRoles={["customer"]}>
+                  <LayoutWrapper>
+                    <Checkout />
+                  </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/customer/orders"
+              element={
+                <ProtectedRoute allowedRoles={["customer"]}>
+                  <LayoutWrapper>
+                    <Orders />
+                  </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/customer/orders/:id"
+              element={
+                <ProtectedRoute allowedRoles={["customer"]}>
+                  <LayoutWrapper>
+                    <OrderDetail />
                   </LayoutWrapper>
                 </ProtectedRoute>
               }
@@ -102,6 +171,16 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/admin/request-orders"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <LayoutWrapper>
+                    <RequestOrders />
+                  </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
 
             {/* Warehouse routes */}
             <Route
@@ -114,6 +193,16 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/warehouse/request-orders"
+              element={
+                <ProtectedRoute allowedRoles={["warehouse"]}>
+                  <LayoutWrapper>
+                    <WarehouseRequestOrders />
+                  </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
 
             {/* Staff routes */}
             <Route
@@ -122,6 +211,16 @@ const App = () => (
                 <ProtectedRoute allowedRoles={["staff"]}>
                   <LayoutWrapper>
                     <StaffDashboard />
+                  </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/staff/orders"
+              element={
+                <ProtectedRoute allowedRoles={["staff"]}>
+                  <LayoutWrapper>
+                    <OrderProcessing />
                   </LayoutWrapper>
                 </ProtectedRoute>
               }
