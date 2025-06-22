@@ -49,6 +49,9 @@ const queryClient = new QueryClient();
 const LayoutWrapper = ({ children }: { children: React.ReactNode }) => (
   <>
     <Navbar />
+    <div className="container mx-auto px-4">
+      <NetworkStatus />
+    </div>
     {children}
   </>
 );
