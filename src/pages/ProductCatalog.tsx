@@ -135,13 +135,21 @@ export default function ProductCatalog() {
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "price_low":
-          return a.price - b.price;
+          const priceA =
+            typeof a.price === "string" ? parseFloat(a.price) : a.price;
+          const priceB =
+            typeof b.price === "string" ? parseFloat(b.price) : b.price;
+          return priceA - priceB;
         case "price_high":
-          return b.price - a.price;
+          const priceAHigh =
+            typeof a.price === "string" ? parseFloat(a.price) : a.price;
+          const priceBHigh =
+            typeof b.price === "string" ? parseFloat(b.price) : b.price;
+          return priceBHigh - priceAHigh;
         case "name":
           return a.name.localeCompare(b.name);
         case "stock":
-          return b.stock_quantity - a.stock_quantity;
+          return (b.quantity || 0) - (a.quantity || 0);
         default:
           return 0;
       }
