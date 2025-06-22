@@ -39,7 +39,7 @@ export default function ProductCatalog() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("name");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchParams, setSearchParams] = useSearchParams();
@@ -69,11 +69,14 @@ export default function ProductCatalog() {
   const loadProducts = async () => {
     try {
       const response = await api.getProducts();
-      setProducts(response.data);
+      setProducts(response.data || []);
     } catch (error) {
+      console.error("API Error:", error);
+      setProducts([]); // Set empty array on error
       toast({
-        title: "Error",
-        description: "Failed to load products",
+        title: "Connection Error",
+        description:
+          "Unable to connect to the server. Please check your internet connection or try again later.",
         variant: "destructive",
       });
     } finally {
@@ -98,7 +101,7 @@ export default function ProductCatalog() {
     }
 
     // Category filter
-    if (selectedCategory) {
+    if (selectedCategory && selectedCategory !== "all") {
       filtered = filtered.filter(
         (product) => product.category_id?.toString() === selectedCategory,
       );
@@ -138,7 +141,7 @@ export default function ProductCatalog() {
   const clearFilters = () => {
     setSearchQuery("");
     setPriceRange({ min: "", max: "" });
-    setSelectedCategory("");
+    setSelectedCategory("all");
     setSortBy("name");
     setSearchParams({});
   };
@@ -215,15 +218,20 @@ export default function ProductCatalog() {
                     <SelectValue placeholder="Category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Categories</SelectItem>
-                    {getUniqueCategories().map((categoryId) => (
-                      <SelectItem
-                        key={categoryId}
-                        value={categoryId!.toString()}
-                      >
-                        Category {categoryId}
-                      </SelectItem>
-                    ))}
+                    <SelectItem value="all">All Categories</SelectItem>
+                    {getUniqueCategories()
+                      .filter(
+                        (categoryId) =>
+                          categoryId !== null && categoryId !== undefined,
+                      )
+                      .map((categoryId) => (
+                        <SelectItem
+                          key={categoryId}
+                          value={categoryId!.toString()}
+                        >
+                          Category {categoryId}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
 
@@ -343,11 +351,11 @@ export default function ProductCatalog() {
                     </button>
                   </Badge>
                 )}
-                {selectedCategory && (
+                {selectedCategory && selectedCategory !== "all" && (
                   <Badge variant="secondary" className="gap-1">
                     Category: {selectedCategory}
                     <button
-                      onClick={() => setSelectedCategory("")}
+                      onClick={() => setSelectedCategory("all")}
                       className="ml-1 hover:bg-black/20 rounded-full p-0.5"
                     >
                       ×
