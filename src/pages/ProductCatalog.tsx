@@ -4,7 +4,6 @@ import { api, type Product } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ProductCard } from "@/components/customer/ProductCard";
-import { ApiTest } from "@/components/ApiTest";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -182,9 +181,6 @@ export default function ProductCatalog() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-metallic-bg via-metallic-light/20 to-metallic-accent/20">
       <div className="container mx-auto px-4 py-8">
-        {/* Temporary API Test Component */}
-        <ApiTest />
-
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-metallic-primary mb-2">
