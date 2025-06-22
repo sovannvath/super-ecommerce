@@ -88,10 +88,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   const getStockStatus = () => {
-    if (product.stock_quantity === 0) {
+    if (product.quantity === 0) {
       return { label: "Out of Stock", color: "bg-red-100 text-red-800" };
     }
-    if (product.stock_quantity <= 5) {
+    if (product.quantity <= 5) {
       return { label: "Low Stock", color: "bg-yellow-100 text-yellow-800" };
     }
     return { label: "In Stock", color: "bg-green-100 text-green-800" };
