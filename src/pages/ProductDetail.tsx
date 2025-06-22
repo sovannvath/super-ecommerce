@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ArrowLeft, ShoppingCart, Heart, Plus } from "lucide-react";
+import { getMockProduct } from "@/data/mockData";
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -42,20 +43,32 @@ export default function ProductDetail() {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
 
-      if (errorMessage.includes("Server is temporarily unavailable")) {
+      // Try to use mock data as fallback
+      const mockProduct = getMockProduct(Number(id));
+      if (mockProduct) {
+        setProduct(mockProduct);
         toast({
-          title: "Server Unavailable",
+          title: "Offline Mode",
           description:
-            "The product catalog is temporarily unavailable. Please try again later.",
-          variant: "destructive",
+            "Showing sample product data. Some features may be limited.",
+          variant: "default",
         });
       } else {
-        toast({
-          title: "Error Loading Product",
-          description:
-            "Failed to load product details. Please refresh the page.",
-          variant: "destructive",
-        });
+        if (errorMessage.includes("Server is temporarily unavailable")) {
+          toast({
+            title: "Server Unavailable",
+            description:
+              "The product catalog is temporarily unavailable. Please try again later.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Product Not Found",
+            description:
+              "This product is not available. Please try another product.",
+            variant: "destructive",
+          });
+        }
       }
     } finally {
       setIsLoading(false);

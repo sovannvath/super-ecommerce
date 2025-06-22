@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ProductCard } from "@/components/customer/ProductCard";
 import { Card, CardContent } from "@/components/ui/card";
+import { getMockProducts } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -89,14 +90,15 @@ export default function ProductCatalog() {
         });
       } else {
         toast({
-          title: "Connection Error",
-          description:
-            "Unable to load products. Please check your connection and try again.",
-          variant: "destructive",
+          title: "Using Offline Mode",
+          description: "Showing sample products. Some features may be limited.",
+          variant: "default",
         });
       }
 
-      setProducts([]);
+      // Use mock data as fallback
+      const mockProducts = getMockProducts();
+      setProducts(mockProducts);
       setIsOffline(true);
     } finally {
       setIsLoading(false);
