@@ -196,11 +196,12 @@ export default function StaffDashboard() {
     );
   }
 
-  const pendingOrders = orders.filter((order) => order.status === "pending");
-  const approvedOrders = orders.filter((order) => order.status === "approved");
-  const deliveredOrders = orders.filter(
-    (order) => order.status === "delivered",
-  );
+  const pendingOrders =
+    orders?.filter((order) => order.status === "pending") || [];
+  const approvedOrders =
+    orders?.filter((order) => order.status === "approved") || [];
+  const deliveredOrders =
+    orders?.filter((order) => order.status === "delivered") || [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-metallic-bg via-metallic-light/20 to-metallic-accent/20">
