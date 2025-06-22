@@ -99,7 +99,7 @@ export default function AdminDashboard() {
           />
           <StatsCard
             title="Low Stock Items"
-            value={stats?.low_stock_count?.toString() || "0"}
+            value={stats?.low_stock_count || lowStockProducts.length || 0}
             icon={AlertTriangle}
             trend={`${lowStockProducts.length} products need attention`}
             color="from-yellow-500 to-orange-500"
