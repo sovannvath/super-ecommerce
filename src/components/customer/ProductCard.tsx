@@ -179,10 +179,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                     </Button>
                   </div>
 
-                  <Button variant="ghost" size="sm">
-                    <Eye className="h-4 w-4 mr-2" />
-                    View Details
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="sm">
+                      <Eye className="h-4 w-4 mr-2" />
+                      Details
+                    </Button>
+                    <Link to="/customer/cart">
+                      <Button variant="ghost" size="sm">
+                        Cart
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>

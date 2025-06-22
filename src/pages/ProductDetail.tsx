@@ -227,10 +227,25 @@ export default function ProductDetail() {
                       onClick={handleAddToCart}
                       disabled={!isInStock || isAddingToCart}
                       className="flex-1"
+                      variant="outline"
                     >
                       <ShoppingCart className="w-4 h-4 mr-2" />
                       {isAddingToCart ? "Adding..." : "Add to Cart"}
                     </Button>
+                    <Link to="/customer/cart" className="flex-1">
+                      <Button disabled={!isInStock} className="w-full">
+                        Buy Now
+                      </Button>
+                    </Link>
+                  </div>
+
+                  <div className="text-center">
+                    <Link
+                      to="/customer/cart"
+                      className="text-sm text-primary hover:underline"
+                    >
+                      View Cart
+                    </Link>
                   </div>
                 </div>
               </CardContent>
