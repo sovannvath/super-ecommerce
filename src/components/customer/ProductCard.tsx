@@ -37,7 +37,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       return;
     }
 
-    if (product.stock_quantity === 0) {
+    if (product.quantity === 0) {
       toast({
         title: "Out of Stock",
         description: "This product is currently out of stock",
