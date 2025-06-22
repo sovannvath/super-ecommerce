@@ -101,12 +101,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   if (viewMode === "list") {
     return (
-      <Link to={`/products/${product.id}`}>
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex gap-6">
-              {/* Product Image */}
-              <div className="w-32 h-32 bg-metallic-bg rounded-lg flex items-center justify-center flex-shrink-0">
+      <Card className="hover:shadow-lg transition-shadow">
+        <CardContent className="p-4">
+          <div className="flex gap-6">
+            {/* Product Image */}
+            <Link to={`/products/${product.id}`} className="flex-shrink-0">
+              <div className="w-32 h-32 bg-metallic-bg rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity">
                 {product.image ? (
                   <img
                     src={product.image}
@@ -120,126 +120,132 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                   <Package className="h-12 w-12 text-metallic-accent" />
                 )}
               </div>
+            </Link>
 
-              {/* Product Info */}
-              <div className="flex-1">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-metallic-primary mb-2">
+            {/* Product Info */}
+            <div className="flex-1">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <Link to={`/products/${product.id}`}>
+                    <h3 className="text-lg font-semibold text-metallic-primary mb-2 hover:text-blue-600 transition-colors cursor-pointer">
                       {product.name}
                     </h3>
-                    <p className="text-metallic-accent text-sm mb-3 line-clamp-2">
-                      {product.description}
-                    </p>
-                    <div className="flex items-center gap-2 mb-3">
-                      <Badge className={stockStatus.color}>
-                        {stockStatus.label}
-                      </Badge>
-                      <span className="text-sm text-metallic-accent">
-                        {product.quantity} available
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="text-right ml-4">
-                    <p className="text-2xl font-bold text-metallic-primary">
-                      {formatCurrency(product.price)}
-                    </p>
+                  </Link>
+                  <p className="text-metallic-accent text-sm mb-3 line-clamp-2">
+                    {product.description}
+                  </p>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Badge className={stockStatus.color}>
+                      {stockStatus.label}
+                    </Badge>
+                    <span className="text-sm text-metallic-accent">
+                      {product.quantity} available
+                    </span>
                   </div>
                 </div>
 
-                {/* Actions */}
-                <div className="flex items-center justify-between mt-4">
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleAddToCart}
-                      disabled={isAddingToCart || product.quantity === 0}
-                      className="bg-metallic-primary hover:bg-metallic-primary/90"
-                    >
-                      {isAddingToCart ? (
-                        <LoadingSpinner size="sm" />
-                      ) : (
-                        <>
-                          <ShoppingCart className="h-4 w-4 mr-2" />
-                          Add to Cart
-                        </>
-                      )}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={handleToggleWishlist}
-                      className={
-                        isWishlistedProduct ? "border-red-500 text-red-500" : ""
-                      }
-                    >
-                      <Heart
-                        className={`h-4 w-4 ${isWishlistedProduct ? "fill-current" : ""}`}
-                      />
-                    </Button>
-                  </div>
+                <div className="text-right ml-4">
+                  <p className="text-2xl font-bold text-metallic-primary">
+                    {formatCurrency(product.price)}
+                  </p>
+                </div>
+              </div>
 
-                  <div className="flex gap-2">
+              {/* Actions */}
+              <div className="flex items-center justify-between mt-4">
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleAddToCart}
+                    disabled={isAddingToCart || product.quantity === 0}
+                    className="bg-metallic-primary hover:bg-metallic-primary/90"
+                  >
+                    {isAddingToCart ? (
+                      <LoadingSpinner size="sm" />
+                    ) : (
+                      <>
+                        <ShoppingCart className="h-4 w-4 mr-2" />
+                        Add to Cart
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleToggleWishlist}
+                    className={
+                      isWishlistedProduct ? "border-red-500 text-red-500" : ""
+                    }
+                  >
+                    <Heart
+                      className={`h-4 w-4 ${isWishlistedProduct ? "fill-current" : ""}`}
+                    />
+                  </Button>
+                </div>
+
+                <div className="flex gap-2">
+                  <Link to={`/products/${product.id}`}>
                     <Button variant="ghost" size="sm">
                       <Eye className="h-4 w-4 mr-2" />
                       Details
                     </Button>
-                    <Link to="/customer/cart">
-                      <Button variant="ghost" size="sm">
-                        Cart
-                      </Button>
-                    </Link>
-                  </div>
+                  </Link>
+                  <Link to="/customer/cart">
+                    <Button variant="ghost" size="sm">
+                      Cart
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </Link>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2 hover:border-blue-200 cursor-pointer">
+    <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2 hover:border-blue-200 relative">
       <CardContent className="p-0">
         {/* Product Image */}
-        <div className="relative aspect-square bg-metallic-bg rounded-t-lg overflow-hidden">
-          {product.image ? (
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              onError={(e) => {
-                e.currentTarget.src = "/placeholder.svg";
-              }}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <Package className="h-16 w-16 text-metallic-accent" />
-            </div>
-          )}
-
-          {/* Stock indicator */}
-          {product.quantity === 0 && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-              <div className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                Out of Stock
+        <Link to={`/products/${product.id}`}>
+          <div className="relative aspect-square bg-metallic-bg rounded-t-lg overflow-hidden cursor-pointer">
+            {product.image ? (
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                onError={(e) => {
+                  e.currentTarget.src = "/placeholder.svg";
+                }}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <Package className="h-16 w-16 text-metallic-accent" />
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Wishlist button */}
-          <Button
-            variant="secondary"
-            size="icon"
-            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={handleToggleWishlist}
-          >
-            <Heart
-              className={`h-4 w-4 ${isWishlistedProduct ? "fill-current text-red-500" : ""}`}
-            />
-          </Button>
-        </div>
+            {/* Stock indicator */}
+            {product.quantity === 0 && (
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                <div className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  Out of Stock
+                </div>
+              </div>
+            )}
+          </div>
+        </Link>
+
+        {/* Wishlist button - separate from image link */}
+        <Button
+          variant="secondary"
+          size="icon"
+          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+          onClick={handleToggleWishlist}
+        >
+          <Heart
+            className={`h-4 w-4 ${isWishlistedProduct ? "fill-current text-red-500" : ""}`}
+          />
+        </Button>
 
         {/* Product Info */}
         <div className="p-4">
