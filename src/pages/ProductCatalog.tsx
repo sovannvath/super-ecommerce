@@ -82,6 +82,10 @@ export default function ProductCatalog() {
   };
 
   const filterProducts = () => {
+    if (!products || !Array.isArray(products)) {
+      setFilteredProducts([]);
+      return;
+    }
     let filtered = [...products];
 
     // Search filter
