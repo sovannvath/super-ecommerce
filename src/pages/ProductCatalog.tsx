@@ -88,35 +88,6 @@ export default function ProductCatalog() {
     }
   };
 
-  const tryConnectToAPI = async () => {
-    setIsLoading(true);
-    try {
-      console.log("🔄 Attempting to connect to real API...");
-      const response = await api.getProducts();
-      if (response && response.data) {
-        setProducts(response.data);
-        setIsOffline(false);
-        console.log(
-          `✅ Successfully loaded ${response.data.length} real products`,
-        );
-        toast({
-          title: "✅ Connected to API",
-          description: `Successfully loaded ${response.data.length} products from server`,
-        });
-      }
-    } catch (error) {
-      console.log("❌ API connection failed");
-      toast({
-        title: "Connection Failed",
-        description:
-          "Unable to connect to the server. Demo mode will continue.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const filterProducts = () => {
     if (!products || !Array.isArray(products)) {
       setFilteredProducts([]);
