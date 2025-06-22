@@ -124,7 +124,7 @@ export default function Index() {
               </Card>
             </Link>
 
-            {user.role === "customer" && (
+            {userRole === "customer" && (
               <Link to="/cart">
                 <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                   <CardContent className="p-6 text-center">
