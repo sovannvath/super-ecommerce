@@ -149,6 +149,7 @@ export default function ProductCatalog() {
   };
 
   const getUniqueCategories = () => {
+    if (!products || products.length === 0) return [];
     const categories = products
       .map((p) => p.category_id)
       .filter((id, index, arr) => id && arr.indexOf(id) === index);
