@@ -253,19 +253,11 @@ export default function ProductCatalog() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Categories</SelectItem>
-                    {getUniqueCategories()
-                      .filter(
-                        (categoryId) =>
-                          categoryId !== null && categoryId !== undefined,
-                      )
-                      .map((categoryId) => (
-                        <SelectItem
-                          key={categoryId}
-                          value={categoryId!.toString()}
-                        >
-                          Category {categoryId}
-                        </SelectItem>
-                      ))}
+                    {getUniqueCategories().map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
 
