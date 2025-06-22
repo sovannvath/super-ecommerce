@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { formatCurrency } from "@/lib/utils";
 import { ShoppingCart, Heart, Eye, Package, AlertTriangle } from "lucide-react";
 
 interface ProductCardProps {
