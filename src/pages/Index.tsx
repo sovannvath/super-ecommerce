@@ -80,6 +80,8 @@ export default function Index() {
   ];
 
   if (isAuthenticated && user) {
+    const userRole = getUserRole();
+
     // Redirect authenticated users to their respective dashboards
     const dashboardRedirects = {
       customer: "/customer/dashboard",
@@ -97,10 +99,10 @@ export default function Index() {
               Welcome back, {user.name}!
             </h1>
             <p className="text-metallic-accent mb-6">
-              You're logged in as {user.role}. Access your dashboard to get
+              You're logged in as {userRole}. Access your dashboard to get
               started.
             </p>
-            <Link to={dashboardRedirects[user.role]}>
+            <Link to={dashboardRedirects[userRole]}>
               <Button className="bg-metallic-primary hover:bg-metallic-primary/90">
                 Go to Dashboard
                 <ArrowRight className="h-4 w-4 ml-2" />
