@@ -44,6 +44,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         api.setToken(token);
         const userData = await api.getUser();
         setUser(userData);
+        setConnectionError(false);
       }
     } catch (error) {
       console.error("Auth check failed:", error);
@@ -53,11 +54,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         error instanceof Error &&
         (error.message.includes("Failed to fetch") ||
           error.message.includes("Network error") ||
+          error.message.includes("Unable to connect") ||
           error.message.includes("fetch"));
 
       if (isNetworkError && retryCount < 2) {
         // Retry up to 2 times for network errors with exponential backoff
         console.log(`Retrying auth check (attempt ${retryCount + 1}/2)...`);
+        setConnectionError(true);
         setTimeout(
           () => {
             checkAuth(retryCount + 1);
@@ -73,6 +76,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         localStorage.removeItem("auth_token");
         api.clearToken();
         setUser(null);
+        if (isNetworkError) {
+          setConnectionError(true);
+        }
       }
     } finally {
       // Only set loading to false on final attempt or success
