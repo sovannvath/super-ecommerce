@@ -6,6 +6,7 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ProductCard } from "@/components/customer/ProductCard";
 import { Card, CardContent } from "@/components/ui/card";
 import { getMockProducts } from "@/data/mockData";
+import { OfflineBanner } from "@/components/shared/OfflineBanner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -241,6 +242,9 @@ export default function ProductCatalog() {
             </div>
           </div>
         </div>
+
+        {/* Offline Banner */}
+        <OfflineBanner isOffline={isOffline} onRetry={loadProducts} />
 
         {/* Search and Filters */}
         <Card className="mb-6">
