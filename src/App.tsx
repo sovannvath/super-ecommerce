@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Navbar } from "@/components/shared/Navbar";
+import { NetworkStatus } from "@/components/shared/NetworkStatus";
 
 // Pages
 import Index from "./pages/Index";
