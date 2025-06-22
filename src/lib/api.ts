@@ -117,11 +117,9 @@ class ApiClient {
    const headers: Record<string, string> = {
   "Content-Type": "application/json",
   Accept: "application/json",
-  ...(options.headers as Record<string, string>), 
+  ...(options.headers as Record<string, string>), // cast to allow spreading safely
 };
-    if (this.token) {
-      headers.Authorization = `Bearer ${this.token}`;
-    }
+
 
     try {
       const response = await fetch(url, {
