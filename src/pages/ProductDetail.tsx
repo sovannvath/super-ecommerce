@@ -254,8 +254,8 @@ export default function ProductDetail() {
 
           <Separator />
 
-          {/* Add to Cart */}
-          {user?.role === "customer" && (
+          {/* Add to Cart - Show for all users */}
+          {(
             <Card>
               <CardContent className="pt-6">
                 <div className="space-y-4">
@@ -345,6 +345,55 @@ export default function ProductDetail() {
                       className="text-gray-600 hover:text-gray-800 underline"
                     >
                       Continue Shopping
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) || (
+            // Show buy button even for non-authenticated users
+            <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200">
+              <CardContent className="pt-6">
+                <div className="text-center space-y-4">
+                  <h3 className="text-xl font-bold text-gray-900">
+                    Ready to Purchase?
+                  </h3>
+                  <p className="text-gray-600">
+                    Sign in to add this item to your cart and proceed to
+                    checkout
+                  </p>
+
+                  <div className="space-y-3">
+                    {/* Primary Buy Now Button */}
+                    <Link to="/auth/login" className="block">
+                      <Button
+                        size="lg"
+                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4"
+                      >
+                        <ShoppingCart className="w-5 h-5 mr-2" />
+                        Buy Now - ${(price * 1).toFixed(2)}
+                      </Button>
+                    </Link>
+
+                    {/* Secondary Sign Up Button */}
+                    <Link to="/auth/register" className="block">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-4"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Create Account & Buy
+                      </Button>
+                    </Link>
+                  </div>
+
+                  <div className="flex justify-center gap-4 text-sm">
+                    <Link
+                      to="/auth/login"
+                      className="text-blue-600 hover:text-blue-800 underline"
+                    >
+                      Already have an account? Sign in
                     </Link>
                   </div>
                 </div>
