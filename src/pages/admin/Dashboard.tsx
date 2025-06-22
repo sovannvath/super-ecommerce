@@ -39,13 +39,13 @@ export default function AdminDashboard() {
 
   const loadDashboardData = async () => {
     try {
-      const [dashboardResponse, lowStockResponse] = await Promise.all([
-        api.getAdminDashboard(),
-        api.getLowStockProducts(),
-      ]);
+      const dashboardResponse = await api.getAdminDashboard();
 
       setStats(dashboardResponse);
-      setLowStockProducts(lowStockResponse.data);
+      // Use low stock products from dashboard response if available
+      if (dashboardResponse.low_stock_products) {
+        setLowStockProducts(dashboardResponse.low_stock_products);
+      }
     } catch (error) {
       toast({
         title: "Error",
