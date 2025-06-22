@@ -76,11 +76,26 @@ export default function ProductCatalog() {
       console.log(`✅ Loaded ${response.data.length} products from API`);
     } catch (error) {
       console.error("Failed to load products:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load products from server",
-        variant: "destructive",
-      });
+
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+
+      if (errorMessage.includes("Server is temporarily unavailable")) {
+        toast({
+          title: "Server Unavailable",
+          description:
+            "Product catalog is temporarily unavailable. Some features may be limited.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Connection Error",
+          description:
+            "Unable to load products. Please check your connection and try again.",
+          variant: "destructive",
+        });
+      }
+
       setProducts([]);
       setIsOffline(true);
     } finally {

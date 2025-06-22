@@ -37,11 +37,26 @@ export default function ProductDetail() {
       setProduct(productData);
     } catch (error) {
       console.error("Error loading product:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load product details",
-        variant: "destructive",
-      });
+
+      // More specific error handling
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+
+      if (errorMessage.includes("Server is temporarily unavailable")) {
+        toast({
+          title: "Server Unavailable",
+          description:
+            "The product catalog is temporarily unavailable. Please try again later.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error Loading Product",
+          description:
+            "Failed to load product details. Please refresh the page.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }

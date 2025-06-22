@@ -50,7 +50,8 @@ export const Navbar: React.FC = () => {
         : response.items || response.data || [];
       setCartItemCount(items.length);
     } catch (error) {
-      // Silently handle cart loading errors
+      // Silently handle cart loading errors - don't crash the app
+      console.warn("Cart loading failed, using fallback:", error);
       setCartItemCount(0);
     }
   };
