@@ -68,97 +68,107 @@ export default function ProductCatalog() {
   }, [products, searchQuery, priceRange, selectedCategory, sortBy]);
 
   const loadProducts = async () => {
-    // First try the API with a timeout
-    try {
-      console.log("Attempting to load products from API...");
+    console.log("Loading products...");
 
-      // Add timeout to prevent hanging
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-
-      const response = await api.getProducts();
-      clearTimeout(timeoutId);
-
-      setProducts(response.data || []);
-      setIsOffline(false);
-      console.log(`Successfully loaded ${response.data?.length || 0} products`);
-    } catch (error) {
-      console.log("API unavailable, switching to demo mode");
-
-      // Immediately fall back to demo data
-      const mockProducts = [
-        {
-          id: 1,
-          name: "Wireless Bluetooth Headphones",
-          description:
-            "Premium quality wireless headphones with noise cancellation and 30-hour battery life.",
-          price: 129.99,
-          stock_quantity: 15,
-          category_id: 1,
-          image_url: "",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 2,
-          name: "Smart Fitness Watch",
-          description:
-            "Track your health and fitness with this advanced smartwatch featuring GPS and heart rate monitoring.",
-          price: 249.99,
-          stock_quantity: 8,
-          category_id: 2,
-          image_url: "",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 3,
-          name: "Portable Phone Charger",
-          description:
-            "Compact 10,000mAh power bank with fast charging capabilities for all your devices.",
-          price: 39.99,
-          stock_quantity: 2,
-          category_id: 1,
-          image_url: "",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 4,
-          name: "LED Desk Lamp",
-          description:
-            "Adjustable LED desk lamp with multiple brightness levels and USB charging port.",
-          price: 59.99,
-          stock_quantity: 12,
-          category_id: 3,
-          image_url: "",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 5,
-          name: "Mechanical Gaming Keyboard",
-          description:
-            "RGB backlit mechanical keyboard with blue switches, perfect for gaming and typing.",
-          price: 89.99,
-          stock_quantity: 6,
-          category_id: 2,
-          image_url: "",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      ];
-
-      setProducts(mockProducts);
-      setIsOffline(true);
-
-      toast({
-        title: "Demo Mode Active",
+    // Immediately load demo data for reliable demo experience
+    const mockProducts = [
+      {
+        id: 1,
+        name: "Wireless Bluetooth Headphones",
         description:
-          "Backend API is currently unavailable. Displaying sample products for demonstration.",
-      });
-    } finally {
-      setIsLoading(false);
+          "Premium quality wireless headphones with noise cancellation and 30-hour battery life.",
+        price: 129.99,
+        stock_quantity: 15,
+        category_id: 1,
+        image_url: "",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: 2,
+        name: "Smart Fitness Watch",
+        description:
+          "Track your health and fitness with this advanced smartwatch featuring GPS and heart rate monitoring.",
+        price: 249.99,
+        stock_quantity: 8,
+        category_id: 2,
+        image_url: "",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: 3,
+        name: "Portable Phone Charger",
+        description:
+          "Compact 10,000mAh power bank with fast charging capabilities for all your devices.",
+        price: 39.99,
+        stock_quantity: 2,
+        category_id: 1,
+        image_url: "",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: 4,
+        name: "LED Desk Lamp",
+        description:
+          "Adjustable LED desk lamp with multiple brightness levels and USB charging port.",
+        price: 59.99,
+        stock_quantity: 12,
+        category_id: 3,
+        image_url: "",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: 5,
+        name: "Mechanical Gaming Keyboard",
+        description:
+          "RGB backlit mechanical keyboard with blue switches, perfect for gaming and typing.",
+        price: 89.99,
+        stock_quantity: 6,
+        category_id: 2,
+        image_url: "",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: 6,
+        name: "Wireless Mouse",
+        description:
+          "Ergonomic wireless mouse with precision tracking and long battery life.",
+        price: 34.99,
+        stock_quantity: 20,
+        category_id: 2,
+        image_url: "",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ];
+
+    setProducts(mockProducts);
+    setIsOffline(true);
+    setIsLoading(false);
+
+    console.log(`Loaded ${mockProducts.length} demo products`);
+
+    // Try to connect to real API in background (optional)
+    try {
+      const response = await api.getProducts();
+      if (response && response.data) {
+        setProducts(response.data);
+        setIsOffline(false);
+        console.log(
+          `Successfully loaded ${response.data.length} real products`,
+        );
+        toast({
+          title: "Connected to API",
+          description: `Loaded ${response.data.length} products from server`,
+        });
+      }
+    } catch (error) {
+      // Keep demo data if API fails
+      console.log("API not available, using demo data");
     }
   };
 
