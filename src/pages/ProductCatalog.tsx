@@ -68,131 +68,24 @@ export default function ProductCatalog() {
   }, [products, searchQuery, priceRange, selectedCategory, sortBy]);
 
   const loadProducts = async () => {
-    console.log("Loading demo products...");
-
-    // Load demo data immediately for reliable demo experience
-    const mockProducts = [
-      {
-        id: 1,
-        name: "Wireless Bluetooth Headphones",
-        description:
-          "Premium quality wireless headphones with noise cancellation and 30-hour battery life.",
-        price: 129.99,
-        quantity: 15,
-        stock_quantity: 15,
-        category_id: 1,
-        image: "",
-        image_url: "",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: 2,
-        name: "Smart Fitness Watch",
-        description:
-          "Track your health and fitness with this advanced smartwatch featuring GPS and heart rate monitoring.",
-        price: 249.99,
-        quantity: 8,
-        stock_quantity: 8,
-        category_id: 2,
-        image: "",
-        image_url: "",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: 3,
-        name: "Portable Phone Charger",
-        description:
-          "Compact 10,000mAh power bank with fast charging capabilities for all your devices.",
-        price: 39.99,
-        quantity: 2,
-        stock_quantity: 2,
-        category_id: 1,
-        image: "",
-        image_url: "",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: 4,
-        name: "LED Desk Lamp",
-        description:
-          "Adjustable LED desk lamp with multiple brightness levels and USB charging port.",
-        price: 59.99,
-        quantity: 12,
-        stock_quantity: 12,
-        category_id: 3,
-        image: "",
-        image_url: "",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: 5,
-        name: "Mechanical Gaming Keyboard",
-        description:
-          "RGB backlit mechanical keyboard with blue switches, perfect for gaming and typing.",
-        price: 89.99,
-        quantity: 6,
-        stock_quantity: 6,
-        category_id: 2,
-        image: "",
-        image_url: "",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: 6,
-        name: "Wireless Mouse",
-        description:
-          "Ergonomic wireless mouse with precision tracking and long battery life.",
-        price: 34.99,
-        quantity: 20,
-        stock_quantity: 20,
-        category_id: 2,
-        image: "",
-        image_url: "",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: 7,
-        name: "4K Webcam",
-        description:
-          "Professional 4K webcam with auto-focus and built-in microphone for video calls.",
-        price: 149.99,
-        quantity: 7,
-        stock_quantity: 7,
-        category_id: 3,
-        image: "",
-        image_url: "",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: 8,
-        name: "Wireless Earbuds",
-        description:
-          "True wireless earbuds with active noise cancellation and premium sound quality.",
-        price: 99.99,
-        quantity: 25,
-        stock_quantity: 25,
-        category_id: 1,
-        image: "",
-        image_url: "",
-        category_id: 1,
-        image_url: "",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-    ];
-
-    setProducts(mockProducts);
-    setIsOffline(true);
-    setIsLoading(false);
-
-    console.log(`✅ Loaded ${mockProducts.length} demo products successfully`);
+    try {
+      setIsLoading(true);
+      const response = await api.getProducts();
+      setProducts(response.data);
+      setIsOffline(false);
+      console.log(`✅ Loaded ${response.data.length} products from API`);
+    } catch (error) {
+      console.error("Failed to load products:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load products from server",
+        variant: "destructive",
+      });
+      setProducts([]);
+      setIsOffline(true);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const tryConnectToAPI = async () => {
