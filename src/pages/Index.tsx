@@ -102,25 +102,22 @@ export default function Index() {
               You're logged in as {userRole}. Access your dashboard to get
               started.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/auth/register">
-                <Button size="lg" className="bg-metallic-primary hover:bg-metallic-primary/90">
-                  Get Started
-                  <ArrowRight className="h-5 w-5 ml-2" />
+            <div className="flex gap-4">
+              <Link to={dashboardRedirects[userRole]}>
+                <Button className="bg-metallic-primary hover:bg-metallic-primary/90">
+                  Go to Dashboard
+                  <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </Link>
-              <Link to="/products">
-                <Button variant="outline" size="lg" className="border-metallic-primary text-metallic-primary">
-                  Browse Products
-                  <ShoppingBag className="h-5 w-5 ml-2" />
-                </Button>
-              </Link>
-            </div>
+              {userRole === "customer" && (
+                <Link to="/products">
+                  <Button variant="outline" className="border-metallic-primary text-metallic-primary">
+                    Shop Now
+                    <ShoppingBag className="h-4 w-4 ml-2" />
+                  </Button>
                 </Link>
               )}
             </div>
-          </div>
-
           {/* Quick Actions for authenticated users */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Link to="/products">
