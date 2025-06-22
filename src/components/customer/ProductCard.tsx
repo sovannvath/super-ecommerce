@@ -260,7 +260,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               <Button
                 size="sm"
                 onClick={handleAddToCart}
-                disabled={isAddingToCart || product.stock_quantity === 0}
+                disabled={isAddingToCart || product.quantity === 0}
                 className="bg-metallic-primary hover:bg-metallic-primary/90"
               >
                 {isAddingToCart ? (
