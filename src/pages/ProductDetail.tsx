@@ -254,8 +254,8 @@ export default function ProductDetail() {
 
           <Separator />
 
-          {/* Add to Cart - Show for all users */}
-          {(
+          {/* Buy Section - Always visible */}
+          {user?.role === "customer" ? (
             <Card>
               <CardContent className="pt-6">
                 <div className="space-y-4">
@@ -350,7 +350,7 @@ export default function ProductDetail() {
                 </div>
               </CardContent>
             </Card>
-          ) || (
+          ) : (
             // Show buy button even for non-authenticated users
             <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200">
               <CardContent className="pt-6">
