@@ -136,7 +136,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                         {stockStatus.label}
                       </Badge>
                       <span className="text-sm text-metallic-accent">
-                        {product.stock_quantity} available
+                        {product.quantity} available
                       </span>
                     </div>
                   </div>
