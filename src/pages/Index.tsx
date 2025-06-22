@@ -207,23 +207,23 @@ export default function Index() {
             for inventory management, order processing, and customer engagement.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/auth/register">
+            <Link to="/products">
               <Button
                 size="lg"
-                className="bg-metallic-primary hover:bg-metallic-primary/90"
+                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-8 py-4 text-lg"
               >
-                Get Started
-                <ArrowRight className="h-5 w-5 ml-2" />
+                Start Shopping
+                <ShoppingBag className="h-5 w-5 ml-2" />
               </Button>
             </Link>
-            <Link to="/products">
+            <Link to="/auth/register">
               <Button
                 variant="outline"
                 size="lg"
-                className="border-metallic-primary text-metallic-primary"
+                className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold px-8 py-4 text-lg"
               >
-                Browse Products
-                <ShoppingBag className="h-5 w-5 ml-2" />
+                Create Account
+                <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
             </Link>
           </div>
@@ -278,9 +278,74 @@ export default function Index() {
         </div>
       </section>
 
+      {/* Quick Shop Section */}
+      <section className="container mx-auto px-4 py-16">
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-3xl p-8 mb-16">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Start Shopping Now! 🛍️
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Browse thousands of products, add to cart, and checkout securely
+              in just a few clicks.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="text-center hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Package className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="font-semibold text-lg mb-2">Browse Products</h3>
+                <p className="text-gray-600 text-sm mb-4">
+                  Explore our vast catalog of quality products
+                </p>
+                <Link to="/products">
+                  <Button className="w-full">Browse Now</Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card className="text-center hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ShoppingCart className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="font-semibold text-lg mb-2">Add to Cart</h3>
+                <p className="text-gray-600 text-sm mb-4">
+                  Click any product to add it to your cart
+                </p>
+                <Link to="/products">
+                  <Button variant="outline" className="w-full">
+                    Shop Now
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card className="text-center hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="font-semibold text-lg mb-2">Secure Checkout</h3>
+                <p className="text-gray-600 text-sm mb-4">
+                  Fast and secure payment processing
+                </p>
+                <Link to="/auth/register">
+                  <Button variant="outline" className="w-full">
+                    Get Started
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Featured Products Section */}
       {featuredProducts.length > 0 && (
-        <section className="container mx-auto px-4 py-16 bg-white/50 rounded-2xl mx-4 mb-16">
+        <section className="container mx-auto px-4 py-16 bg-white/80 rounded-3xl mx-4 mb-16 backdrop-blur">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-metallic-primary mb-4">
               Featured Products
@@ -297,9 +362,8 @@ export default function Index() {
           <div className="text-center">
             <Link to="/products">
               <Button
-                variant="outline"
                 size="lg"
-                className="border-metallic-primary text-metallic-primary"
+                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-8"
               >
                 View All Products
                 <Package className="h-5 w-5 ml-2" />
