@@ -118,7 +118,6 @@ export default function Index() {
                 </Link>
               )}
             </div>
-          {/* Quick Actions for authenticated users */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Link to="/products">
               <Card className="hover:shadow-lg transition-shadow cursor-pointer">
