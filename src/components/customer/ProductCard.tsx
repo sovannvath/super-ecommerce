@@ -200,94 +200,125 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   }
 
   return (
-    <Link to={`/products/${product.id}`}>
-      <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-        <CardContent className="p-0">
-          {/* Product Image */}
-          <div className="relative aspect-square bg-metallic-bg rounded-t-lg overflow-hidden">
-            {product.image ? (
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                onError={(e) => {
-                  e.currentTarget.src = "/placeholder.svg";
-                }}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <Package className="h-16 w-16 text-metallic-accent" />
-              </div>
-            )}
+    <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2 hover:border-blue-200 cursor-pointer">
+      <CardContent className="p-0">
+        {/* Product Image */}
+        <div className="relative aspect-square bg-metallic-bg rounded-t-lg overflow-hidden">
+          {product.image ? (
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              onError={(e) => {
+                e.currentTarget.src = "/placeholder.svg";
+              }}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Package className="h-16 w-16 text-metallic-accent" />
+            </div>
+          )}
 
-            {/* Stock indicator */}
-            {product.quantity === 0 && (
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                <div className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                  Out of Stock
-                </div>
+          {/* Stock indicator */}
+          {product.quantity === 0 && (
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <div className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                Out of Stock
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Wishlist button */}
+          {/* Wishlist button */}
+          <Button
+            variant="secondary"
+            size="icon"
+            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={handleToggleWishlist}
+          >
+            <Heart
+              className={`h-4 w-4 ${isWishlistedProduct ? "fill-current text-red-500" : ""}`}
+            />
+          </Button>
+        </div>
+
+        {/* Product Info */}
+        <div className="p-4">
+          <Link to={`/products/${product.id}`}>
+            <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors text-lg">
+              {product.name}
+            </h3>
+          </Link>
+          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+            {product.description}
+          </p>
+
+          <div className="flex items-center justify-between mb-3">
+            <Badge className={`text-xs ${stockStatus.color} font-semibold`}>
+              {stockStatus.label}
+            </Badge>
+            <span className="text-xs text-gray-500 font-medium">
+              {product.quantity} left
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-2xl font-bold text-blue-600">
+              {formatCurrency(product.price)}
+            </p>
             <Button
-              variant="secondary"
-              size="icon"
-              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+              size="sm"
+              onClick={handleAddToCart}
+              disabled={isAddingToCart || product.quantity === 0}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4"
+            >
+              {isAddingToCart ? (
+                <LoadingSpinner size="sm" />
+              ) : (
+                <>
+                  <ShoppingCart className="h-4 w-4 mr-1" />
+                  Add
+                </>
+              )}
+            </Button>
+          </div>
+
+          {/* Quick action buttons */}
+          <div className="flex gap-2">
+            <Link to={`/products/${product.id}`} className="flex-1">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold"
+              >
+                <Eye className="h-4 w-4 mr-1" />
+                View Details
+              </Button>
+            </Link>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={handleToggleWishlist}
+              className={`border-gray-300 hover:border-red-400 ${
+                isWishlistedProduct
+                  ? "border-red-500 text-red-500 bg-red-50"
+                  : "text-gray-600"
+              }`}
             >
               <Heart
-                className={`h-4 w-4 ${isWishlistedProduct ? "fill-current text-red-500" : ""}`}
+                className={`h-4 w-4 ${isWishlistedProduct ? "fill-current" : ""}`}
               />
             </Button>
           </div>
 
-          {/* Product Info */}
-          <div className="p-4">
-            <h3 className="font-semibold text-metallic-primary mb-2 line-clamp-1 group-hover:text-metallic-secondary transition-colors">
-              {product.name}
-            </h3>
-            <p className="text-sm text-metallic-accent mb-3 line-clamp-2">
-              {product.description}
-            </p>
-
-            <div className="flex items-center justify-between mb-3">
-              <Badge className={`text-xs ${stockStatus.color}`}>
-                {stockStatus.label}
-              </Badge>
-              <span className="text-xs text-metallic-accent">
-                {product.quantity} left
-              </span>
+          {/* Low stock warning */}
+          {product.quantity > 0 && product.quantity <= 5 && (
+            <div className="flex items-center gap-1 mt-2 text-xs text-yellow-600 bg-yellow-50 p-2 rounded">
+              <AlertTriangle className="h-3 w-3" />
+              <span className="font-medium">Only {product.quantity} left!</span>
             </div>
-
-            <div className="flex items-center justify-between">
-              <p className="text-xl font-bold text-metallic-primary">
-                {formatCurrency(product.price)}
-              </p>
-              <Button
-                size="sm"
-                onClick={handleAddToCart}
-                disabled={isAddingToCart || product.quantity === 0}
-                className="bg-metallic-primary hover:bg-metallic-primary/90"
-              >
-                {isAddingToCart ? (
-                  <LoadingSpinner size="sm" />
-                ) : (
-                  <ShoppingCart className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-
-            {/* Low stock warning */}
-            {product.quantity > 0 && product.quantity <= 5 && (
-              <div className="flex items-center gap-1 mt-2 text-xs text-yellow-600">
-                <AlertTriangle className="h-3 w-3" />
-                <span>Only {product.quantity} left!</span>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
