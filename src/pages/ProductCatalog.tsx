@@ -66,17 +66,69 @@ export default function ProductCatalog() {
     filterProducts();
   }, [products, searchQuery, priceRange, selectedCategory, sortBy]);
 
-  const loadProducts = async () => {
+  const loadProducts = async (retryCount = 0) => {
     try {
+      console.log(`Loading products (attempt ${retryCount + 1})`);
       const response = await api.getProducts();
       setProducts(response.data || []);
+      console.log(`Successfully loaded ${response.data?.length || 0} products`);
     } catch (error) {
       console.error("API Error:", error);
-      setProducts([]); // Set empty array on error
+
+      // Retry logic for network errors
+      if (retryCount < 2 && error.message.includes("Failed to fetch")) {
+        console.log(
+          `Retrying API call in 2 seconds... (attempt ${retryCount + 2})`,
+        );
+        setTimeout(() => loadProducts(retryCount + 1), 2000);
+        return;
+      }
+
+      // Fallback to mock data for demo purposes
+      const mockProducts = [
+        {
+          id: 1,
+          name: "Sample Product 1",
+          description:
+            "This is a sample product to demo the interface while the API is loading.",
+          price: 29.99,
+          stock_quantity: 15,
+          category_id: 1,
+          image_url: "",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        {
+          id: 2,
+          name: "Sample Product 2",
+          description:
+            "Another sample product to show the catalog functionality.",
+          price: 49.99,
+          stock_quantity: 8,
+          category_id: 2,
+          image_url: "",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        {
+          id: 3,
+          name: "Sample Product 3",
+          description: "Demo product with low stock to show inventory alerts.",
+          price: 19.99,
+          stock_quantity: 2,
+          category_id: 1,
+          image_url: "",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ];
+
+      setProducts(mockProducts);
+
       toast({
-        title: "Connection Error",
+        title: "Using Demo Data",
         description:
-          "Unable to connect to the server. Please check your internet connection or try again later.",
+          "Unable to connect to server. Showing sample products for demonstration.",
         variant: "destructive",
       });
     } finally {
