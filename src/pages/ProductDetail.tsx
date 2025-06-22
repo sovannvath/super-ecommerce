@@ -59,7 +59,7 @@ export default function ProductDetail() {
 
     try {
       setIsAddingToCart(true);
-      await api.addToCart({ product_id: product.id, quantity });
+      await api.addToCart(product.id, quantity);
       toast({
         title: "Added to Cart",
         description: `${quantity} ${product.name}(s) added to your cart`,

@@ -88,6 +88,18 @@ const App = () => (
               }
             />
 
+            {/* Cart route - redirect to customer cart if logged in */}
+            <Route
+              path="/cart"
+              element={
+                <ProtectedRoute allowedRoles={["customer"]}>
+                  <LayoutWrapper>
+                    <Cart />
+                  </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
+
             {/* Auth routes */}
             <Route path="/auth/login" element={<Login />} />
             <Route path="/auth/register" element={<Register />} />

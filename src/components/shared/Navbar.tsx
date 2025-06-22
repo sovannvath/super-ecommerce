@@ -51,7 +51,7 @@ export const Navbar: React.FC = () => {
         return [
           ...baseItems,
           { href: "/customer/dashboard", icon: BarChart3, label: "Dashboard" },
-          { href: "/cart", icon: ShoppingCart, label: "Cart" },
+          { href: "/customer/cart", icon: ShoppingCart, label: "Cart" },
           { href: "/customer/orders", icon: Package, label: "My Orders" },
         ];
       case "admin":
