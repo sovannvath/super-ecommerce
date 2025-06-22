@@ -48,7 +48,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
     try {
       setIsAddingToCart(true);
-      await api.addToCart({ product_id: product.id, quantity: 1 });
+      await api.addToCart(product.id, 1);
       toast({
         title: "Added to cart",
         description: `${product.name} has been added to your cart`,
