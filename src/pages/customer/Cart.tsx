@@ -42,7 +42,7 @@ export default function Cart() {
 
     try {
       setUpdatingItems((prev) => new Set(prev).add(itemId));
-      await api.updateCartItem(itemId, { quantity: newQuantity });
+      await api.updateCartItem(itemId, newQuantity);
       setCartItems((prev) =>
         prev.map((item) =>
           item.id === itemId ? { ...item, quantity: newQuantity } : item,
@@ -71,7 +71,7 @@ export default function Cart() {
   const removeItem = async (itemId: number) => {
     try {
       setUpdatingItems((prev) => new Set(prev).add(itemId));
-      await api.removeCartItem(itemId);
+      await api.removeFromCart(itemId);
       setCartItems((prev) => prev.filter((item) => item.id !== itemId));
       toast({
         title: "Item Removed",
