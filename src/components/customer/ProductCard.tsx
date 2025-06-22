@@ -272,10 +272,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             </div>
 
             {/* Low stock warning */}
-            {product.stock_quantity > 0 && product.stock_quantity <= 5 && (
+            {product.quantity > 0 && product.quantity <= 5 && (
               <div className="flex items-center gap-1 mt-2 text-xs text-yellow-600">
                 <AlertTriangle className="h-3 w-3" />
-                <span>Only {product.stock_quantity} left!</span>
+                <span>Only {product.quantity} left!</span>
               </div>
             )}
           </div>
