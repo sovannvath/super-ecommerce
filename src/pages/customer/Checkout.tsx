@@ -83,9 +83,18 @@ export default function Checkout() {
 
     try {
       setIsProcessing(true);
+
+      // Create order with cart items
+      const orderItems = cartItems.map((item) => ({
+        product_id: item.product_id,
+        quantity: item.quantity,
+      }));
+
       const order = await api.createOrder({
+        items: orderItems,
         payment_method: paymentMethod,
         shipping_address: shippingAddress,
+        billing_address: shippingAddress,
       });
 
       toast({
