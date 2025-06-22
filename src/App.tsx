@@ -188,7 +188,7 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={["admin"]}>
                   <LayoutWrapper>
-                    <ProductDetail />
+                    <AdminProductDetail />
                   </LayoutWrapper>
                 </ProtectedRoute>
               }
