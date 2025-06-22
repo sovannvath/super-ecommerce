@@ -24,7 +24,11 @@ export default function Cart() {
     try {
       setIsLoading(true);
       const response = await api.getCart();
-      setCartItems(response.items || []);
+      // Handle different response formats
+      const items = Array.isArray(response)
+        ? response
+        : response.items || response.data || [];
+      setCartItems(items);
     } catch (error) {
       console.error("Error loading cart:", error);
       toast({

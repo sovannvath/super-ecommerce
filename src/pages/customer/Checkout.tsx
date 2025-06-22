@@ -36,10 +36,18 @@ export default function Checkout() {
         api.getPaymentMethods(),
       ]);
 
-      setCartItems(cartResponse.items || []);
-      setPaymentMethods(paymentMethodsResponse.methods || ["cash", "card"]);
+      // Handle different response formats
+      const cartItems = Array.isArray(cartResponse)
+        ? cartResponse
+        : cartResponse.items || cartResponse.data || [];
+      const paymentMethods = Array.isArray(paymentMethodsResponse)
+        ? paymentMethodsResponse
+        : paymentMethodsResponse.methods || ["cash", "card"];
 
-      if (cartResponse.items?.length === 0) {
+      setCartItems(cartItems);
+      setPaymentMethods(paymentMethods);
+
+      if (cartItems.length === 0) {
         toast({
           title: "Cart is Empty",
           description: "Please add items to your cart before checkout",
