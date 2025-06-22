@@ -14,6 +14,7 @@ interface AuthContextType {
   ) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
+  getUserRole: () => string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
