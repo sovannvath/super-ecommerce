@@ -25,6 +25,12 @@ import CustomerDashboard from "./pages/customer/Dashboard";
 import AdminDashboard from "./pages/admin/Dashboard";
 import ProductManagement from "./pages/admin/ProductManagement";
 
+// Warehouse pages
+import WarehouseDashboard from "./pages/warehouse/Dashboard";
+
+// Staff pages
+import StaffDashboard from "./pages/staff/Dashboard";
+
 const queryClient = new QueryClient();
 
 // Layout wrapper for authenticated pages
@@ -103,11 +109,7 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={["warehouse"]}>
                   <LayoutWrapper>
-                    <div className="min-h-screen flex items-center justify-center">
-                      <h1 className="text-2xl text-metallic-primary">
-                        Warehouse Dashboard - Coming Soon
-                      </h1>
-                    </div>
+                    <WarehouseDashboard />
                   </LayoutWrapper>
                 </ProtectedRoute>
               }
@@ -119,11 +121,7 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={["staff"]}>
                   <LayoutWrapper>
-                    <div className="min-h-screen flex items-center justify-center">
-                      <h1 className="text-2xl text-metallic-primary">
-                        Staff Dashboard - Coming Soon
-                      </h1>
-                    </div>
+                    <StaffDashboard />
                   </LayoutWrapper>
                 </ProtectedRoute>
               }
