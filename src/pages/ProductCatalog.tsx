@@ -225,23 +225,6 @@ export default function ProductCatalog() {
                 Discover our wide range of products
               </p>
             </div>
-
-            {isOffline && (
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 px-3 py-2 bg-yellow-100 text-yellow-800 rounded-lg">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                  <span className="text-sm font-medium">Demo Mode</span>
-                </div>
-                <Button
-                  onClick={tryConnectToAPI}
-                  variant="outline"
-                  className="border-metallic-primary text-metallic-primary"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Connecting..." : "Connect to API"}
-                </Button>
-              </div>
-            )}
           </div>
         </div>
 
