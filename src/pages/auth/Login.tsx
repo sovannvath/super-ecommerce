@@ -31,8 +31,18 @@ export default function Login() {
     try {
       setIsLoading(true);
       await login(email, password);
-      // Navigation will be handled by the auth context and routing
-      navigate("/", { replace: true });
+
+      // Role-based navigation after login
+      const userRole = getUserRole();
+      const dashboardRoutes = {
+        customer: "/",
+        admin: "/admin/dashboard",
+        warehouse: "/warehouse/dashboard",
+        staff: "/staff/dashboard",
+      };
+
+      const redirectTo = dashboardRoutes[userRole] || "/";
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
