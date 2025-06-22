@@ -67,33 +67,32 @@ export default function ProductCatalog() {
     filterProducts();
   }, [products, searchQuery, priceRange, selectedCategory, sortBy]);
 
-  const loadProducts = async (retryCount = 0) => {
+  const loadProducts = async () => {
+    // First try the API with a timeout
     try {
-      console.log(`Loading products (attempt ${retryCount + 1})`);
+      console.log("Attempting to load products from API...");
+
+      // Add timeout to prevent hanging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
       const response = await api.getProducts();
+      clearTimeout(timeoutId);
+
       setProducts(response.data || []);
-      console.log(`Successfully loaded ${response.data?.length || 0} products`);
       setIsOffline(false);
+      console.log(`Successfully loaded ${response.data?.length || 0} products`);
     } catch (error) {
-      console.error("API Error:", error);
+      console.log("API unavailable, switching to demo mode");
 
-      // Retry logic for network errors
-      if (retryCount < 2 && error.message.includes("Failed to fetch")) {
-        console.log(
-          `Retrying API call in 2 seconds... (attempt ${retryCount + 2})`,
-        );
-        setTimeout(() => loadProducts(retryCount + 1), 2000);
-        return;
-      }
-
-      // Fallback to mock data for demo purposes
+      // Immediately fall back to demo data
       const mockProducts = [
         {
           id: 1,
-          name: "Sample Product 1",
+          name: "Wireless Bluetooth Headphones",
           description:
-            "This is a sample product to demo the interface while the API is loading.",
-          price: 29.99,
+            "Premium quality wireless headphones with noise cancellation and 30-hour battery life.",
+          price: 129.99,
           stock_quantity: 15,
           category_id: 1,
           image_url: "",
@@ -102,10 +101,10 @@ export default function ProductCatalog() {
         },
         {
           id: 2,
-          name: "Sample Product 2",
+          name: "Smart Fitness Watch",
           description:
-            "Another sample product to show the catalog functionality.",
-          price: 49.99,
+            "Track your health and fitness with this advanced smartwatch featuring GPS and heart rate monitoring.",
+          price: 249.99,
           stock_quantity: 8,
           category_id: 2,
           image_url: "",
@@ -114,11 +113,36 @@ export default function ProductCatalog() {
         },
         {
           id: 3,
-          name: "Sample Product 3",
-          description: "Demo product with low stock to show inventory alerts.",
-          price: 19.99,
+          name: "Portable Phone Charger",
+          description:
+            "Compact 10,000mAh power bank with fast charging capabilities for all your devices.",
+          price: 39.99,
           stock_quantity: 2,
           category_id: 1,
+          image_url: "",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        {
+          id: 4,
+          name: "LED Desk Lamp",
+          description:
+            "Adjustable LED desk lamp with multiple brightness levels and USB charging port.",
+          price: 59.99,
+          stock_quantity: 12,
+          category_id: 3,
+          image_url: "",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        {
+          id: 5,
+          name: "Mechanical Gaming Keyboard",
+          description:
+            "RGB backlit mechanical keyboard with blue switches, perfect for gaming and typing.",
+          price: 89.99,
+          stock_quantity: 6,
+          category_id: 2,
           image_url: "",
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
@@ -129,10 +153,9 @@ export default function ProductCatalog() {
       setIsOffline(true);
 
       toast({
-        title: "Using Demo Data",
+        title: "Demo Mode Active",
         description:
-          "Unable to connect to server. Showing sample products for demonstration.",
-        variant: "destructive",
+          "Backend API is currently unavailable. Displaying sample products for demonstration.",
       });
     } finally {
       setIsLoading(false);
