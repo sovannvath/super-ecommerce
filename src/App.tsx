@@ -172,6 +172,36 @@ const App = () => (
               }
             />
             <Route
+              path="/admin/products/new"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <LayoutWrapper>
+                    <ProductManagement />
+                  </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/products/:id"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <LayoutWrapper>
+                    <ProductManagement />
+                  </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/products/:id/edit"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <LayoutWrapper>
+                    <ProductManagement />
+                  </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/admin/request-orders"
               element={
                 <ProtectedRoute allowedRoles={["admin"]}>
